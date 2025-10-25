@@ -1,5 +1,8 @@
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobil menü inicializálása
+    initMobileMenu();
+
     // Gombok inicializálása
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
@@ -44,14 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 navLinks.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
 
-                // Sima görgetés a megfelelő szekcióhoz
-                const targetId = this.getAttribute('href').substring(1);
-                if (targetId) {
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        targetSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
+                // Mobil menü bezárása
+                closeMobileMenu();
             }
         });
     });
@@ -70,10 +67,79 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'translateY(0)';
         });
     });
+
+    // Kattintás a dokumentumon kívülre - menü bezárása
+    document.addEventListener('click', function(e) {
+        const nav = document.querySelector('nav');
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+
+        if (nav && mobileBtn && !nav.contains(e.target) && !mobileBtn.contains(e.target)) {
+            closeMobileMenu();
+        }
+    });
 });
+
+// Mobil menü inicializálása
+function initMobileMenu() {
+    const headerContent = document.querySelector('.header-content');
+    const nav = document.querySelector('nav');
+
+    // Ha még nincs mobil menü gomb, létrehozzuk
+    if (!document.getElementById('mobileMenuBtn')) {
+        const mobileMenuBtn = document.createElement('button');
+        mobileMenuBtn.id = 'mobileMenuBtn';
+        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        mobileMenuBtn.className = 'mobile-menu-btn';
+        mobileMenuBtn.setAttribute('aria-label', 'Menü megnyitása');
+
+        // Gomb beszúrása a navigáció elé
+        nav.parentNode.insertBefore(mobileMenuBtn, nav);
+
+        // Eseménykezelő
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+    }
+}
+
+// Mobil menü megnyitása/bezárása
+function toggleMobileMenu() {
+    const navUl = document.querySelector('nav ul');
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+
+    if (navUl.classList.contains('show')) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+}
+
+// Mobil menü megnyitása
+function openMobileMenu() {
+    const navUl = document.querySelector('nav ul');
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+
+    navUl.classList.add('show');
+    mobileBtn.innerHTML = '<i class="fas fa-times"></i>';
+    mobileBtn.setAttribute('aria-label', 'Menü bezárása');
+}
+
+// Mobil menü bezárása
+function closeMobileMenu() {
+    const navUl = document.querySelector('nav ul');
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+
+    navUl.classList.remove('show');
+    mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+    mobileBtn.setAttribute('aria-label', 'Menü megnyitása');
+}
 
 // Modal megjelenítése
 function showModal(title, type) {
+    // Bezárjuk a mobil menüt modal megnyitásakor
+    closeMobileMenu();
+
     // Egyszerű modal helyett alert (teljes modal komponens helyett)
     if (type === 'login') {
         alert('Bejelentkezési űrlap\n\nEz egy demo verzió. A teljes funkcionalitás fejlesztés alatt áll.');
@@ -113,64 +179,10 @@ function animateStats() {
     });
 }
 
-// Reszponzív navigációs menü (kis képernyőkre)
-function initMobileMenu() {
-    const headerContent = document.querySelector('.header-content');
-    const nav = document.querySelector('nav');
-
-    // Mobil menü gomb létrehozása (ha szükséges)
-    if (window.innerWidth <= 768 && !document.getElementById('mobileMenuBtn')) {
-        const mobileMenuBtn = document.createElement('button');
-        mobileMenuBtn.id = 'mobileMenuBtn';
-        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-        mobileMenuBtn.className = 'mobile-menu-btn';
-
-        // Stílus hozzáadása
-        const style = document.createElement('style');
-        style.textContent = `
-            .mobile-menu-btn {
-                display: none;
-                background: none;
-                border: none;
-                color: white;
-                font-size: 1.5rem;
-                cursor: pointer;
-            }
-            
-            @media (max-width: 768px) {
-                .mobile-menu-btn {
-                    display: block;
-                }
-                
-                nav ul {
-                    display: none;
-                    flex-direction: column;
-                    width: 100%;
-                    background: var(--secondary);
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    padding: 1rem;
-                }
-                
-                nav ul.show {
-                    display: flex;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Gomb beszúrása
-        headerContent.insertBefore(mobileMenuBtn, nav);
-
-        // Eseménykezelő
-        mobileMenuBtn.addEventListener('click', function() {
-            const navUl = document.querySelector('nav ul');
-            navUl.classList.toggle('show');
-        });
+// Reszponzív menü kezelése ablak átméretezéskor
+window.addEventListener('resize', function() {
+    // Ha visszanagyítunk és a menü nyitva van, bezárjuk
+    if (window.innerWidth > 768) {
+        closeMobileMenu();
     }
-}
-
-// Inicializálás
-window.addEventListener('resize', initMobileMenu);
-initMobileMenu();
+});
