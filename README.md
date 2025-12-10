@@ -80,7 +80,7 @@ A projekt gyakorlati célja egy **valós problémára** (az egészséges életm�
 
 ---
 
-## 📄 Fejlesztői információk
+## Fejlesztői információk
 
 - **Projekt neve:** LiftLog  
 - **Típus:** Szakdolgozati projekt (Edzés- és étkezésnapló webalkalmazás)  
