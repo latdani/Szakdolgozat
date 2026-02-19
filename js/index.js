@@ -1,66 +1,71 @@
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobil menü inicializálása
+    const user = JSON.parse(localStorage.getItem('user'));
+    const authButtons = document.querySelector('.auth-buttons');
+
+    if (user && authButtons) {
+        // Csak a HTML szerkezetet adjuk meg, a formázást a CSS végzi az osztályokon keresztül
+        authButtons.innerHTML = `
+            <span class="user-name-display"> ${user.name}! </span>
+            <button class="btn btn-outline" id="logoutBtn">Kijelentkezés</button>
+        `;
+
+        // Kijelentkezés logika
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        });
+    }
+    // 1. Mobil menü inicializálása
     initMobileMenu();
 
-    // Gombok inicializálása
+    // 2. Gombok inicializálása
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const ctaBtn = document.getElementById('ctaBtn');
     const dashboardBtn = document.getElementById('dashboardBtn');
 
-    // Navigációs linkek
-    const navLinks = document.querySelectorAll('nav a');
+    // --- ÁTIRÁNYÍTÁSI LOGIKA ---
 
-    // Gomb eseménykezelők
-    if (loginBtn) {
-        loginBtn.addEventListener('click', function() {
-            showModal('Bejelentkezés', 'login');
-        });
-    }
-
+    // Regisztráció gomb (Headerben)
     if (registerBtn) {
         registerBtn.addEventListener('click', function() {
-            showModal('Regisztráció', 'register');
+            window.location.href = 'register.html';
         });
     }
 
+    // "Kezdd el most" gomb (Hero szekcióban)
     if (ctaBtn) {
         ctaBtn.addEventListener('click', function() {
-            showModal('Kezdd el a LiftLog használatát!', 'register');
+            window.location.href = 'register.html';
         });
     }
 
+    // Bejelentkezés gomb (Most még figyelmeztet, mert nincs login.html-ed)
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+    }
+
+    // Dashboard gomb
     if (dashboardBtn) {
         dashboardBtn.addEventListener('click', function() {
-            alert('Irányítópult előnézet megnyitva! A teljes funkciók bejelentkezés után érhetők el.');
+            alert('Az irányítópult csak bejelentkezés után érhető el. Kérlek regisztrálj!');
+            window.location.href = 'register.html';
         });
     }
 
-    // Navigációs linkek aktív állapotának kezelése
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (!this.getAttribute('href').startsWith('#')) {
-                e.preventDefault();
+    // --- VIZUÁLIS EFFEKTEK ÉS ANIMÁCIÓK ---
 
-                // Aktív link frissítése
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-
-                // Mobil menü bezárása
-                closeMobileMenu();
-            }
-        });
-    });
-
-    // Statisztikák animálása
+    // Statisztikák animálása (pörgő számok)
     animateStats();
 
     // Feature card hover effektek
     const featureCards = document.querySelectorAll('.feature-card');
     featureCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
+            this.style.transform = 'translateY(-10px)';
+            this.style.transition = '0.3s ease';
         });
 
         card.addEventListener('mouseleave', function() {
@@ -68,7 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Kattintás a dokumentumon kívülre - menü bezárása
+    // Aktív link kezelése (melyik oldalon állunk éppen)
+    updateActiveLinks();
+
+    // Kattintás a dokumentumon kívülre - mobil menü bezárása
     document.addEventListener('click', function(e) {
         const nav = document.querySelector('nav');
         const mobileBtn = document.getElementById('mobileMenuBtn');
@@ -79,109 +87,85 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Mobil menü inicializálása
-function initMobileMenu() {
-    const headerContent = document.querySelector('.header-content');
-    const nav = document.querySelector('nav');
+// --- SEGÉDFÜGGVÉNYEK ---
 
-    // Ha még nincs mobil menü gomb, létrehozzuk
+function updateActiveLinks() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('nav a');
+
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        if (linkPage === currentPage) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+function initMobileMenu() {
+    const nav = document.querySelector('nav');
     if (!document.getElementById('mobileMenuBtn')) {
         const mobileMenuBtn = document.createElement('button');
         mobileMenuBtn.id = 'mobileMenuBtn';
         mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
         mobileMenuBtn.className = 'mobile-menu-btn';
-        mobileMenuBtn.setAttribute('aria-label', 'Menü megnyitása');
 
-        // Gomb beszúrása a navigáció elé
         nav.parentNode.insertBefore(mobileMenuBtn, nav);
 
-        // Eseménykezelő
         mobileMenuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            toggleMobileMenu();
+            const navUl = document.querySelector('nav ul');
+            if (navUl.classList.contains('show')) {
+                closeMobileMenu();
+            } else {
+                navUl.classList.add('show');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-times"></i>';
+            }
         });
     }
 }
 
-// Mobil menü megnyitása/bezárása
-function toggleMobileMenu() {
-    const navUl = document.querySelector('nav ul');
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-
-    if (navUl.classList.contains('show')) {
-        closeMobileMenu();
-    } else {
-        openMobileMenu();
-    }
-}
-
-// Mobil menü megnyitása
-function openMobileMenu() {
-    const navUl = document.querySelector('nav ul');
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-
-    navUl.classList.add('show');
-    mobileBtn.innerHTML = '<i class="fas fa-times"></i>';
-    mobileBtn.setAttribute('aria-label', 'Menü bezárása');
-}
-
-// Mobil menü bezárása
 function closeMobileMenu() {
     const navUl = document.querySelector('nav ul');
     const mobileBtn = document.getElementById('mobileMenuBtn');
-
-    navUl.classList.remove('show');
-    mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    mobileBtn.setAttribute('aria-label', 'Menü megnyitása');
-}
-
-// Modal megjelenítése
-function showModal(title, type) {
-    // Bezárjuk a mobil menüt modal megnyitásakor
-    closeMobileMenu();
-
-    // Egyszerű modal helyett alert (teljes modal komponens helyett)
-    if (type === 'login') {
-        alert('Bejelentkezési űrlap\n\nEz egy demo verzió. A teljes funkcionalitás fejlesztés alatt áll.');
-    } else if (type === 'register') {
-        alert('Regisztrációs űrlap\n\nEz egy demo verzió. A teljes funkcionalitás fejlesztés alatt áll.');
+    if (navUl && navUl.classList.contains('show')) {
+        navUl.classList.remove('show');
+        if (mobileBtn) mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
     }
 }
 
-// Statisztikák animálása
 function animateStats() {
     const statNumbers = document.querySelectorAll('.stat-number');
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const statNumber = entry.target;
-                const targetValue = parseInt(statNumber.textContent);
+                const targetText = statNumber.textContent;
+                const targetValue = parseInt(targetText);
+                const suffix = targetText.replace(/[0-9]/g, ''); // Kimenti a + vagy % jelet
+
                 let currentValue = 0;
                 const increment = targetValue / 50;
                 const timer = setInterval(() => {
                     currentValue += increment;
                     if (currentValue >= targetValue) {
-                        statNumber.textContent = targetValue + (statNumber.textContent.includes('+') ? '+' : '%');
+                        statNumber.textContent = targetValue + suffix;
                         clearInterval(timer);
                     } else {
-                        statNumber.textContent = Math.floor(currentValue) + (statNumber.textContent.includes('+') ? '+' : '%');
+                        statNumber.textContent = Math.floor(currentValue) + suffix;
                     }
                 }, 30);
-
                 observer.unobserve(statNumber);
             }
         });
     }, { threshold: 0.5 });
 
-    statNumbers.forEach(stat => {
-        observer.observe(stat);
-    });
+    statNumbers.forEach(stat => observer.observe(stat));
 }
 
-// Reszponzív menü kezelése ablak átméretezéskor
+// Ablak átméretezés kezelése
 window.addEventListener('resize', function() {
-    // Ha visszanagyítunk és a menü nyitva van, bezárjuk
     if (window.innerWidth > 768) {
         closeMobileMenu();
     }
