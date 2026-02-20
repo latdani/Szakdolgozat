@@ -2,9 +2,14 @@
   "name": "szakdolgozat",
   "version": "1.0.0",
   "description": "",
-  "main": "js/index.js",
+  "main": "regi/js/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "frontend": "npm run start --prefix frontend",
+    "backend": "npm run start --prefix backend"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

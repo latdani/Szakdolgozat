@@ -1,0 +1,36 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="logo">
+        <i class="fas fa-dumbbell"></i>
+        <h1>LiftLog</h1>
+      </div>
+      <h2>Bejelentkezés</h2>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+
+        <div class="input-group">
+          <label for="login_email">E-mail cím</label>
+          <input type="email" formControlName="email" id="login_email" placeholder="pelda@email.hu">
+        </div>
+
+        <div class="input-group">
+          <label for="login_password">Jelszó</label>
+          <input type="password" formControlName="password" id="login_password" placeholder="******">
+        </div>
+
+        <button type="submit" (click)="onLogin()" class="btn btn-primary btn-block">
+          Belépés
+        </button>
+
+        <p *ngIf="errorMessage" class="error-text">
+          {{ errorMessage }}
+        </p>
+      </form>
+
+      <p class="auth-footer">
+        Nincs még fiókod? <a routerLink="/register">Regisztráció</a>
+      </p>
+    </div>
+  </div>
+</div>
