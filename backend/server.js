@@ -152,6 +152,15 @@ app.get('/api/workouts/:userId', async (req, res) => {
     }
 });
 
+app.delete('/api/workouts/:id', async (req, res) => {
+    try {
+        await Workout.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Edzés törölve" });
+    } catch (err) {
+        res.status(500).json({ message: "Hiba a törlés közben" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Szerver fut: http://localhost:${PORT}`);
 });
