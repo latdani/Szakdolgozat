@@ -1,40 +1,65 @@
-<div class="auth-page"> <div class="auth-container">
-  <div class="auth-card">
-    <div class="logo">
-      <i class="fas fa-dumbbell"></i>
-      <h1>LiftLog</h1>
-    </div>
-    <h2>Fiók létrehozása</h2>
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="logo">
+        <i class="fas fa-dumbbell"></i>
+        <h1>LiftLog</h1>
+      </div>
+      <h2>Fiók létrehozása</h2>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-
-      <div class="input-group">
-        <label for="reg_name">Teljes név</label>
-        <input type="text" formControlName="name" id="reg_name" placeholder="Kovács János">
+      <div *ngIf="errorMessage" class="error-banner">
+        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
       </div>
 
-      <div class="input-group">
-        <label for="reg_email">E-mail cím</label>
-        <input type="email" formControlName="email" id="reg_email" placeholder="pelda@email.hu">
-      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
-      <div class="input-group">
-        <label for="reg_password">Jelszó</label>
-        <input type="password" formControlName="password" id="reg_password" placeholder="******">
-      </div>
+        <div class="input-group">
+          <label for="reg_name">Teljes név</label>
+          <input type="text"
+                 formControlName="name"
+                 id="reg_name"
+                 placeholder="Kovács János"
+                 [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          <small class="validation-error" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+            Legalább 2 karakter szükséges!
+          </small>
+        </div>
 
-      <button type="submit" class="btn btn-primary btn-block" [disabled]="registerForm.invalid">
-        Regisztráció
-      </button>
+        <div class="input-group">
+          <label for="reg_email">E-mail cím</label>
+          <input type="email"
+                 formControlName="email"
+                 id="reg_email"
+                 placeholder="pelda@email.hu"
+                 [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          <small class="validation-error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            Kérjük, érvényes e-mail címet adj meg!
+          </small>
+        </div>
 
-      <p *ngIf="errorMessage" class="error-text" style="color: red; text-align: center; margin-top: 10px;">
-        {{ errorMessage }}
+        <div class="input-group">
+          <label for="reg_password">Jelszó</label>
+          <input type="password"
+                 formControlName="password"
+                 id="reg_password"
+                 placeholder="******"
+                 [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <small class="validation-error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            A jelszónak legalább 6 karakternek kell lennie!
+          </small>
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary btn-block"
+                [disabled]="registerForm.invalid">
+          Regisztráció
+        </button>
+
+      </form>
+
+      <p class="auth-footer">
+        Van már fiókod? <a routerLink="/login">Jelentkezz be</a>
       </p>
-    </form>
-
-    <p class="auth-footer">
-      Van már fiókod? <a routerLink="/login">Jelentkezz be</a>
-    </p>
+    </div>
   </div>
-</div>
 </div>

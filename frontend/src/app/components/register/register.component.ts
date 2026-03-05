@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  // Nagyon fontos: ezek a modulok kellenek a HTML-ben használt [formGroup]-hoz és routerLink-hez
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -15,13 +14,13 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
+  loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
-    // A form mezőinek definiálása és alapvető ellenőrzése (validáció)
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -29,19 +28,38 @@ export class RegisterComponent {
     });
   }
 
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return field ? field.invalid && (field.dirty || field.touched) : false;
+  }
+
   onRegister() {
     if (this.registerForm.valid) {
+      this.loading = true;
+      this.errorMessage = '';
+
       this.authService.register(this.registerForm.value).subscribe({
         next: (res: any) => {
-          // Mivel a backend most már visszaadja a 'user' objektumot:
-          this.authService.setUser(res.user);
+          this.loading = false;
 
-          alert('Sikeres regisztráció és automatikus belépés!');
-          this.router.navigate(['/']); // Rögtön a főoldalra megyünk
+          // 1. AUTOMATIKUS BELÉPTETÉS
+          // Elmentjük a szervertől kapott felhasználói adatokat az AuthService-en keresztül
+          if (res.user) {
+            this.authService.setUser(res.user);
+          }
+
+          // 2. ÁTIRÁNYÍTÁS A FŐOLDALRA
+          console.log('Sikeres regisztráció és automatikus belépés');
+          this.router.navigate(['/']);
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Hiba a regisztráció során.';
+          this.loading = false;
+          this.errorMessage = err.error?.message || 'Hiba történt a regisztráció során.';
         }
+      });
+    } else {
+      Object.values(this.registerForm.controls).forEach(control => {
+        control.markAsTouched();
       });
     }
   }
