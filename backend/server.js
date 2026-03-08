@@ -12,11 +12,11 @@ app.use(cors());
 app.use(express.json());
 
 // --- MONGODB CSATLAKOZÁS ---
-const mongoURI = process.env.MONGO_URI || "mongodb+srv://admin:adminjohhny@cluster0.kl7txri.mongodb.net/LiftLogDB?appName=Cluster0";
+const mongoURI = process.env.MONGO_URI || "mongodb+srv://latdani15_db_user:liftlog@liftlog.hc38pzs.mongodb.net/LiftLogDB?retryWrites=true&w=majority";
+
 mongoose.connect(mongoURI)
     .then(() => console.log('✅ Sikeres MongoDB csatlakozás!'))
     .catch(err => console.error('❌ MongoDB hiba:', err));
-
 // --- ADATMODELLEK ---
 
 // Felhasználó modell

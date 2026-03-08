@@ -23,9 +23,14 @@
           Belépés
         </button>
 
-        <p *ngIf="errorMessage" class="error-text">
-          {{ errorMessage }}
-        </p>
+        <button type="button" routerLink="/" class="btn btn-primary btn-block homepage">
+          Vissza a kezdőképernyőre
+        </button>
+
+        <div *ngIf="errorMessage" class="error-banner">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <span class="error-message">{{ errorMessage }}</span>
+        </div>
       </form>
 
       <p class="auth-footer">

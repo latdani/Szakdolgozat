@@ -1592,12 +1592,13 @@ input.is-invalid {
   display: block;
 }
 
-/* Kiemelt hibaüzenet a form tetején (backend hiba) */
+/* Kiemelt hibaüzenet a form tetején */
 .error-banner {
   background-color: #f8d7da;
   color: #721c24;
   padding: 12px;
   border-radius: 6px;
+  margin-top: 20px;
   margin-bottom: 20px;
   border: 1px solid #f5c6cb;
   text-align: center;
@@ -1808,4 +1809,8 @@ input:focus {
   margin-top: 30px;
   display: flex;
   gap: 15px;
+}
+
+.homepage{
+  background-color: green;
 }

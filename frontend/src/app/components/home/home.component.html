@@ -1,39 +1,4 @@
-<header>
-  <div class="container">
-    <div class="header-content">
-      <div class="logo">
-        <i class="fas fa-dumbbell"></i>
-        <h1>LiftLog</h1>
-      </div>
 
-      <nav>
-        <ul>
-          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Kezdőlap</a></li>
-          <li><a routerLink="/workout-log">Edzésnapló</a></li>
-          <li><a routerLink="/diet">Étkezésnapló</a></li>
-          <li><a routerLink="/stats">Statisztikák</a></li>
-          <li><a routerLink="/about">Rólunk</a></li>
-        </ul>
-      </nav>
-
-      <div class="auth-buttons">
-        <ng-container *ngIf="!authService.isLoggedIn()">
-          <button class="btn btn-outline" routerLink="/login">Bejelentkezés</button>
-          <button class="btn btn-primary" routerLink="/register">Regisztráció</button>
-        </ng-container>
-
-        <div *ngIf="authService.isLoggedIn()" class="user-logged-in">
-          <span class="user-name-display">
-            <i class="fas fa-user-circle"></i> {{ authService.getUser()?.name }}
-          </span>
-          <button class="btn btn-logout-nav" (click)="onLogout()">
-            <i class="fas fa-sign-out-alt"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
 
 <section class="hero">
   <div class="container">
