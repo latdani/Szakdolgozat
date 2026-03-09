@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-
+const mealRoutes = require('./routes/meals');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware-ek
 app.use(cors());
 app.use(express.json());
+app.use('/api/meals', mealRoutes);
 
 // --- MONGODB CSATLAKOZÁS ---
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://latdani15_db_user:liftlog@liftlog.hc38pzs.mongodb.net/LiftLogDB?retryWrites=true&w=majority";

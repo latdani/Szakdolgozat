@@ -1,0 +1,85 @@
+
+<div class="workout-page">
+
+  <div class="header-section">
+    <h1><i class="fas fa-clipboard-list"></i> Edzésnapló</h1>
+    <button class="btn-toggle" (click)="showHistory = !showHistory">
+      {{ showHistory ? '+ Új edzés rögzítése' : '← Vissza az előzményekhez' }}
+    </button>
+  </div>
+
+  <div *ngIf="showHistory" class="history-section">
+    <div *ngIf="workouts.length === 0" class="empty-msg">
+      Még nincs rögzített edzésed. Ideje elkezdeni!
+    </div>
+
+    <div class="workout-card" *ngFor="let w of workouts">
+      <div class="card-header">
+        <span class="date">{{ w.date | date:'yyyy. MMMM dd. HH:mm' }}</span>
+
+        <div class="header-right">
+          <span class="muscle-tag">{{ w.muscleGroup }}</span>
+          <button class="btn-delete-workout" (click)="deleteWorkout(w._id)">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <table class="exercise-table">
+        <thead>
+        <tr>
+          <th>Gyakorlat</th>
+          <th>Súly</th>
+          <th>Szett</th>
+          <th>Ism.</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let ex of w.exercises">
+          <td>{{ ex.name }}</td>
+          <td>{{ ex.weight }} kg</td>
+          <td>{{ ex.sets }}</td>
+          <td>{{ ex.reps }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="!showHistory" class="form-section">
+    <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
+      <div class="main-input">
+        <label>Milyen izomcsoportot edzettél?</label>
+        <input type="text" formControlName="muscleGroup" placeholder="pl. Mell-Bicepsz">
+      </div>
+
+      <div formArrayName="exercises" class="exercises-list">
+        <div *ngFor="let ex of exercises.controls; let i=index" [formGroupName]="i" class="exercise-item">
+          <div class="exercise-header">
+            <h3>{{ i + 1 }}. gyakorlat</h3>
+            <button type="button" class="btn-del" (click)="removeExercise(i)" *ngIf="exercises.length > 1">×</button>
+          </div>
+          <div class="input-grid">
+            <input formControlName="name" placeholder="Gyakorlat neve">
+            <input type="number" formControlName="weight" placeholder="kg">
+            <input type="number" formControlName="sets" placeholder="szett">
+            <input type="number" formControlName="reps" placeholder="ism.">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-add" (click)="addExercise()">+ Gyakorlat hozzáadása</button>
+        <button type="submit" class="btn-save" [disabled]="workoutForm.invalid || loading">
+          {{ loading ? 'Mentés...' : 'Edzés befejezése' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>

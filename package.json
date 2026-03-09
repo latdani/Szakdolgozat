@@ -1,12 +1,12 @@
 {
   "name": "szakdolgozat",
   "version": "1.0.0",
-  "description": "",
-  "main": "regi/js/index.js",
+  "description": "Edzés- és Étkezésnapló Webalkalmazás",
   "scripts": {
-    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "frontend": "npm run start --prefix frontend",
-    "backend": "npm run start --prefix backend"
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run backend\" \"npm run frontend\"",
+    "frontend": "npm start --prefix frontend",
+    "backend": "npm start --prefix backend",
+    "install-all": "npm install && npm install --prefix frontend && npm install --prefix backend"
   },
   "private": true,
   "devDependencies": {

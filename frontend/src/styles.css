@@ -1814,3 +1814,516 @@ input:focus {
 .homepage{
   background-color: green;
 }
+
+.card {
+  border-radius: 12px;
+  border: none;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.input-group-text {
+  font-size: 0.8rem;
+  background-color: #f8f9fa;
+}
+
+input::placeholder {
+  font-size: 0.9rem;
+  color: #adb5bd;
+}
+
+.btn-success {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Kártya és háttér */
+.bg-gradient-success {
+  background: linear-gradient(45deg, #28a745, #20c997);
+}
+
+.card {
+  transition: transform 0.3s ease;
+}
+
+/* Input mezők egyedi színezése a könnyebb felismerhetőségért */
+.form-control:focus {
+  box-shadow: none;
+  border: 2px solid #28a745 !important;
+  background-color: #fff !important;
+}
+
+.bg-light-blue { background-color: #e7f1ff !important; }
+.bg-light-orange { background-color: #fff3e0 !important; }
+.bg-light-yellow { background-color: #fefbe8 !important; }
+
+/* Sorok animációja */
+.food-item-row {
+  border-bottom: 1px solid #f0f0f0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gombok stílusa */
+.btn-lg {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+.card {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Egyedi háttérszínek a makróknak */
+.bg-protein { background-color: #e3f2fd !important; border-color: #90caf9; }
+.bg-carbs { background-color: #fff3e0 !important; border-color: #ffcc80; }
+.bg-fat { background-color: #f1f8e9 !important; border-color: #c5e1a5; }
+
+/* Input fókusz stílus */
+.form-control:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Animáció új sor hozzáadásakor */
+.row.p-3 {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Gombok betűtípusa */
+.btn-lg {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.diet-container {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+}
+
+.diet-card {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.diet-header {
+  background: #27ae60;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.diet-body { padding: 30px; }
+
+.meal-type-section { margin-bottom: 25px; }
+.meal-type-section label { font-weight: bold; margin-right: 15px; }
+
+.custom-select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* SOROK ELRENDEZÉSE FLEXBOX-AL */
+.food-header-row, .food-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.food-header-row {
+  font-weight: bold;
+  color: #666;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #eee;
+}
+
+/* Oszlopszélességek */
+.col-name { flex: 3; }
+.col-stat { flex: 1; text-align: center; }
+.col-action { width: 40px; }
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #fafafa;
+  text-align: center;
+}
+
+.col-name input { text-align: left; }
+
+/* Színek */
+.f-bg { background-color: #e3f2fd !important; }
+.sz-bg { background-color: #fff3e0 !important; }
+.z-bg { background-color: #f1f8e9 !important; }
+
+/* Gombok */
+.diet-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.add-row-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.save-btn:disabled { background: #ccc; }
+
+.del-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Container a selectnek */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Ne legyen túl széles */
+}
+
+/* Maga a lenyíló menü */
+.custom-diet-select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+  background-color: #ffffff;
+  border: 2px solid #e0e6ed;
+  border-radius: 12px;
+  appearance: none; /* Eltünteti a gyári nyilat */
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Fókusz és Hover állapot */
+.custom-diet-select:hover {
+  border-color: #27ae60;
+  background-color: #f9fdfb;
+}
+
+.custom-diet-select:focus {
+  outline: none;
+  border-color: #27ae60;
+  box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.1);
+}
+
+/* Egyedi nyíl ikon */
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #27ae60;
+  pointer-events: none; /* Átkattintható legyen */
+}
+
+/* A szekció felirata */
+.section-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+/* A gomb, ami a select-et helyettesíti */
+.custom-dropdown .btn {
+  width: 100%;
+  max-width: 300px;
+  text-align: left;
+  padding: 12px 20px;
+  border: 2px solid #e0e6ed;
+  border-radius: 14px;
+  background: #fff;
+  font-weight: 500;
+  color: #2c3e50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-dropdown .btn:hover, .custom-dropdown .btn:focus {
+  border-color: #27ae60;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
+}
+
+/* A lenyíló lista stílusa */
+.dropdown-menu {
+  padding: 8px;
+  margin-top: 8px !important;
+  min-width: 250px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px); /* Modern üveghatás */
+}
+
+/* A lista elemei */
+.dropdown-item {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+
+/* Egyedi kijelölés színe - végre nem a gyári kék! */
+.dropdown-item:hover {
+  background-color: #f0fdf4; /* Nagyon halvány zöld */
+  color: #166534;
+  transform: translateX(5px); /* Egy kis játékos mozgás */
+}
+
+/* A kis nyíl stílusa */
+.dropdown-toggle::after {
+  color: #27ae60;
+  border-top-width: 6px;
+  border-right-width: 6px;
+  border-left-width: 6px;
+}
+
+.meal-type-section {
+  margin-bottom: 30px;
+  max-width: 350px;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.modern-select {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3436;
+  background-color: #ffffff;
+  border: 2px solid #dfe6e9;
+  border-radius: 16px;
+  cursor: pointer;
+  appearance: none; /* Eltünteti a gyári csúnya nyilat */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.modern-select:hover {
+  border-color: #00b894;
+  background-color: #f9fffb;
+}
+
+.modern-select:focus {
+  outline: none;
+  border-color: #00b894;
+  box-shadow: 0 0 0 4px rgba(0, 184, 148, 0.1);
+}
+
+/* Az egyedi zöld nyíl ikon */
+.select-icon {
+  position: absolute;
+  right: 18px;
+  color: #00b894;
+  pointer-events: none;
+  font-size: 1.1rem;
+}
+
+/* Az opciók stílusának javítása (amennyire a böngésző engedi) */
+.modern-select option {
+  padding: 15px;
+  background-color: white;
+  color: #2d3436;
+}
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  user-select: none;
+}
+
+.select-trigger {
+  padding: 14px 20px;
+  background: white;
+  border: 2px solid #dfe6e9;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.select-trigger:hover, .select-trigger.opened {
+  border-color: #00b894;
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.1);
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+  color: #00b894;
+}
+
+.select-trigger.opened .arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* A LENYÍLÓ LISTA STÍLUSA - Végre nem gagyi! */
+.options-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
+  z-index: 100;
+  padding: 8px;
+  animation: slideIn 0.2s ease-out;
+}
+
+.option-item {
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #2d3436;
+}
+
+/* Itt állítod be, mi történjen ha ráviszed az egeret */
+.option-item:hover {
+  background-color: #f0fdf4; /* Halványzöld háttér */
+  color: #00b894; /* Zöld szöveg */
+  padding-left: 22px; /* Egy kis mozgás effekt */
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Félhold Kalóriaszámláló Stílusok --- */
+.semi-circle-container {
+  position: relative;
+  width: 1000px;
+  height: 300px;
+  margin: 0 auto;
+  margin-bottom: 80px;
+}
+
+.half-moon-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* A szürke sín */
+.svg-track {
+  fill: none;
+  stroke: #e9ecef;
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+/* Az élő zöld sáv */
+.svg-progress {
+  fill: none;
+  stroke: #27ae60; /* LiftLog zöld */
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-dasharray: 282.74; /* A félkör teljes hossza */
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* A számok a félhold közepén */
+.calorie-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.current-cal {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+}
+
+.max-cal {
+  font-size: 40px;
+  color: #95a5a6;
+  font-weight: 500;
+}
+
+.etkezes_iras{
+  margin: 40px auto;
+  text-align: center;
+  font-size: 40px;
+}

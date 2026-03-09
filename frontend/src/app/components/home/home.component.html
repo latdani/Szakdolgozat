@@ -5,9 +5,11 @@
     <h2>Kövesd nyomon edzéseidet és étkezéseidet</h2>
     <p>A LiftLog segítségével könnyedén naplózhatod edzéseidet, nyomon követheted a tápanyagbeviteleted, és követheted fejlődésedet.</p>
 
-    <button class="btn btn-primary btn-large" [routerLink]="authService.isLoggedIn() ? '/workout' : '/register'">
-      {{ authService.isLoggedIn() ? 'Irány az edzéshez!' : 'Kezdd el most!' }}
+    <button *ngIf="authService.isLoggedIn()"
+            class="btn btn-primary btn-large"
+            routerLink="/workout-log"> Irány az edzéshez!
     </button>
+
   </div>
 </section>
 

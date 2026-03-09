@@ -1,0 +1,91 @@
+<div class="row justify-content-center mb-4">
+  <div class="col-lg-10">
+    <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+      <h5 class="text-secondary text-uppercase fw-bold mb-3 etkezes_iras">Napi Kalóriacél</h5>
+
+      <div class="semi-circle-container">
+        <svg viewBox="0 0 200 100" class="half-moon-svg">
+          <path d="M 10,100 A 90,90 0 0,1 190,100" class="svg-track" />
+          <path d="M 10,100 A 90,90 0 0,1 190,100" class="svg-progress"
+                [style.stroke-dashoffset]="getDashOffset()" />
+        </svg>
+
+        <div class="calorie-text">
+          <span class="current-cal">{{ currentCalories }}</span>
+          <span class="max-cal">/ {{ dailyGoal }} kcal</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="diet-container">
+  <div class="diet-card">
+    <div class="diet-header">
+      <h4>Étkezés rögzítése</h4>
+    </div>
+
+    <div class="diet-body">
+      <form [formGroup]="mealForm" (ngSubmit)="onSubmit()">
+
+        <div class="meal-type-section">
+          <label class="section-label">Mikor ettél? ✨</label>
+          <div class="custom-select-wrapper">
+            <div class="select-trigger" (click)="toggleDropdown()" [class.opened]="dropdownOpen">
+              <span>{{ mealForm.get('mealType')?.value || 'Válassz étkezést...' }}</span>
+              <i class="bi bi-chevron-down arrow-icon"></i>
+            </div>
+
+            <div class="options-list" *ngIf="dropdownOpen">
+              <div class="option-item" (click)="selectOption('Reggeli')">Reggeli 🌅</div>
+              <div class="option-item" (click)="selectOption('Tízórai')">Tízórai 🍎</div>
+              <div class="option-item" (click)="selectOption('Ebéd')">Ebéd 🍲</div>
+              <div class="option-item" (click)="selectOption('Uzsonna')">Uzsonna ☕</div>
+              <div class="option-item" (click)="selectOption('Vacsora')">Vacsora 🌙</div>
+            </div>
+          </div>
+          <input type="hidden" formControlName="mealType">
+        </div>
+
+        <div class="food-header-row">
+          <div class="col-name">Étel neve</div>
+          <div class="col-stat">Kalória</div>
+          <div class="col-stat">Fehérje</div>
+          <div class="col-stat">Szénh.</div>
+          <div class="col-stat">Zsír</div>
+          <div class="col-action"></div>
+        </div>
+
+        <div formArrayName="foods">
+          <div *ngFor="let food of foods.controls; let i=index" [formGroupName]="i" class="food-input-row">
+            <div class="col-name">
+              <input formControlName="name" placeholder="pl. Zabkása">
+            </div>
+            <div class="col-stat">
+              <input type="number" formControlName="calories">
+            </div>
+            <div class="col-stat">
+              <input type="number" formControlName="protein" class="f-bg">
+            </div>
+            <div class="col-stat">
+              <input type="number" formControlName="carbs" class="sz-bg">
+            </div>
+            <div class="col-stat">
+              <input type="number" formControlName="fat" class="z-bg">
+            </div>
+            <div class="col-action">
+              <button type="button" class="del-btn" (click)="removeFood(i)" *ngIf="foods.length > 1">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="diet-footer">
+          <button type="button" class="add-row-btn" (click)="addFood()">+ Új sor</button>
+          <button type="submit" class="save-btn" [disabled]="mealForm.invalid">Mentés</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
