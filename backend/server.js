@@ -13,7 +13,18 @@ app.use(express.json());
 app.use('/api/meals', mealRoutes);
 
 // --- MONGODB CSATLAKOZÁS ---
-const mongoURI = process.env.MONGO_URI || "mongodb+srv://latdani15_db_user:liftlog@liftlog.hc38pzs.mongodb.net/LiftLogDB?retryWrites=true&w=majority";
+// Windowson a Node néha csak 127.0.0.1-et lát DNS szervernek, és nem tudja feloldani a mongodb+srv címet
+const dns = require('dns');
+if (dns.getServers().every(s => s.startsWith('127.'))) {
+    dns.setServers(['1.1.1.1', '8.8.8.8']);
+}
+
+// Az elérési adat a backend/.env fájlban van (minta: .env.example), nem kerül fel a GitHubra
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+    console.error('❌ Hiányzik a MONGO_URI! Másold le a backend/.env.example fájlt backend/.env néven, és töltsd ki.');
+    process.exit(1);
+}
 
 mongoose.connect(mongoURI)
     .then(() => console.log('✅ Sikeres MongoDB csatlakozás!'))
