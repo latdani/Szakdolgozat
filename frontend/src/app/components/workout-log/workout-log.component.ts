@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { WorkoutService } from '../../services/workout.service';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-workout-log',
@@ -24,8 +23,7 @@ export class WorkoutLogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private workoutService: WorkoutService,
-    private authService: AuthService
+    private workoutService: WorkoutService
   ) {
     // Az űrlap inicializálása
     this.workoutForm = this.fb.group({
@@ -44,15 +42,12 @@ export class WorkoutLogComponent implements OnInit {
   }
 
   loadHistory() {
-    const user = this.authService.getUser();
-    if (user && user.id) {
-      this.workoutService.getUserWorkouts(user.id).subscribe({
-        next: (data) => {
-          this.workouts = data;
-        },
-        error: (err) => console.error('Hiba a lekérésnél:', err)
-      });
-    }
+    this.workoutService.getUserWorkouts().subscribe({
+      next: (data) => {
+        this.workouts = data;
+      },
+      error: (err) => console.error('Hiba a lekérésnél:', err)
+    });
   }
 
   createExercise(): FormGroup {
@@ -89,10 +84,9 @@ export class WorkoutLogComponent implements OnInit {
   onSubmit() {
     if (this.workoutForm.valid) {
       this.loading = true;
-      const user = this.authService.getUser();
 
+      // A felhasználó azonosítóját a backend a tokenből veszi
       const workoutData = {
-        userId: user.id,
         muscleGroup: this.workoutForm.value.muscleGroup,
         exercises: this.workoutForm.value.exercises
       };

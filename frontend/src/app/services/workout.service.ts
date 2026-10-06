@@ -15,9 +15,9 @@ export class WorkoutService {
     return this.http.post(this.apiUrl, workoutData);
   }
 
-  // Egy adott felhasználó összes edzésének lekérése
-  getUserWorkouts(userId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${userId}`);
+  // A bejelentkezett felhasználó összes edzésének lekérése (a backend a tokenből tudja, ki az)
+  getUserWorkouts(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
   deleteWorkout(id: string) {

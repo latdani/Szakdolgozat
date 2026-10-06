@@ -2,8 +2,10 @@
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const mealRoutes = require('./routes/meals');
+const auth = require('./middleware/auth');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -25,6 +27,13 @@ if (!mongoURI) {
     console.error('❌ Hiányzik a MONGO_URI! Másold le a backend/.env.example fájlt backend/.env néven, és töltsd ki.');
     process.exit(1);
 }
+if (!process.env.JWT_SECRET) {
+    console.error('❌ Hiányzik a JWT_SECRET a backend/.env fájlból! (minta: .env.example)');
+    process.exit(1);
+}
+
+// Bejelentkezési token készítése (7 napig érvényes)
+const createToken = (user) => jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 mongoose.connect(mongoURI)
     .then(() => console.log('✅ Sikeres MongoDB csatlakozás!'))
@@ -92,6 +101,7 @@ app.post('/api/register', async (req, res) => {
         // hogy a frontend azonnal be tudja léptetni a regisztráció után.
         res.status(201).json({
             message: "Sikeres regisztráció!",
+            token: createToken(newUser),
             user: {
                 id: newUser._id,
                 name: newUser.name,
@@ -125,6 +135,7 @@ app.post('/api/login', async (req, res) => {
 
         res.status(200).json({
             message: 'Sikeres bejelentkezés!',
+            token: createToken(user),
             user: { id: user._id, name: user.name, email: user.email }
         });
     } catch (err) {
@@ -133,16 +144,18 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 3. Edzés mentése
-app.post('/api/workouts', async (req, res) => {
-    try {
-        const { userId, muscleGroup, exercises } = req.body;
+// Az edzés végpontok csak bejelentkezve érhetők el, a felhasználó azonosítója a tokenből jön (req.userId)
 
-        if (!userId || !muscleGroup || !exercises) {
+// 3. Edzés mentése
+app.post('/api/workouts', auth, async (req, res) => {
+    try {
+        const { muscleGroup, exercises } = req.body;
+
+        if (!muscleGroup || !exercises) {
             return res.status(400).json({ message: "Hiányzó adatok az edzés mentéséhez!" });
         }
 
-        const newWorkout = new Workout({ userId, muscleGroup, exercises });
+        const newWorkout = new Workout({ userId: req.userId, muscleGroup, exercises });
         await newWorkout.save();
 
         res.status(201).json({ message: "Edzés sikeresen rögzítve!" });
@@ -152,11 +165,11 @@ app.post('/api/workouts', async (req, res) => {
     }
 });
 
-// Edzések lekérése egy adott felhasználóhoz
-app.get('/api/workouts/:userId', async (req, res) => {
+// A bejelentkezett felhasználó edzéseinek lekérése
+app.get('/api/workouts', auth, async (req, res) => {
     try {
         // Megkeressük az edzéseket a userId alapján, és dátum szerint csökkenő sorrendbe rakjuk
-        const workouts = await Workout.find({ userId: req.params.userId }).sort({ date: -1 });
+        const workouts = await Workout.find({ userId: req.userId }).sort({ date: -1 });
         res.status(200).json(workouts);
     } catch (err) {
         console.error("Lekérdezési hiba:", err);
@@ -164,9 +177,13 @@ app.get('/api/workouts/:userId', async (req, res) => {
     }
 });
 
-app.delete('/api/workouts/:id', async (req, res) => {
+// Edzés törlése (csak a saját edzését törölheti a felhasználó)
+app.delete('/api/workouts/:id', auth, async (req, res) => {
     try {
-        await Workout.findByIdAndDelete(req.params.id);
+        const deletedWorkout = await Workout.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+        if (!deletedWorkout) {
+            return res.status(404).json({ message: "Az edzés nem található" });
+        }
         res.status(200).json({ message: "Edzés törölve" });
     } catch (err) {
         res.status(500).json({ message: "Hiba a törlés közben" });
