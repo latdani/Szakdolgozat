@@ -7,7 +7,8 @@
       </div>
 
       <nav>
-        <ul>
+        <!-- Mobilon a menü csak a hamburger gombra nyílik le; linkre kattintva bezáródik -->
+        <ul [class.show]="menuOpen" (click)="menuOpen = false">
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Kezdőlap</a></li>
           <li><a routerLink="/workout-log">Edzésnapló</a></li>
           <li><a routerLink="/diet">Étkezésnapló</a></li>
@@ -31,6 +32,11 @@
           </button>
         </div>
       </div>
+
+      <button class="mobile-menu-btn" type="button" (click)="menuOpen = !menuOpen"
+              [attr.aria-expanded]="menuOpen" aria-label="Menü">
+        <i class="fas" [class.fa-bars]="!menuOpen" [class.fa-times]="menuOpen"></i>
+      </button>
     </div>
   </div>
 </header>

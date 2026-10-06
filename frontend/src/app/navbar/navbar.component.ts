@@ -13,6 +13,7 @@ import {AuthService} from '../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   userName: string = '';
+  menuOpen = false; // Mobilon a lenyíló menü állapota
 
   constructor(public authService: AuthService, private router: Router) {}
 
@@ -29,6 +30,7 @@ export class NavbarComponent implements OnInit {
   }
 
   onLogout() {
+    this.menuOpen = false;
     this.authService.logout();
     this.router.navigate(['/login']);
   }

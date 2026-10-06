@@ -328,13 +328,11 @@ footer {
 
 @media (max-width: 768px) {
   .header-content {
-    flex-direction: column;
-    gap: 15px;
+    gap: 10px;
   }
 
-  nav ul {
-    flex-wrap: wrap;
-    justify-content: center;
+  .auth-buttons {
+    margin-left: auto;
   }
 
   .dashboard-container {
@@ -1275,7 +1273,8 @@ input {
 /* --- Félhold Kalóriaszámláló Stílusok --- */
 .semi-circle-container {
   position: relative;
-  width: 1000px;
+  width: 100%;
+  max-width: 1000px;
   height: 300px;
   margin: 0 auto;
   margin-bottom: 80px;
@@ -1330,4 +1329,62 @@ input {
   margin: 40px auto;
   text-align: center;
   font-size: 40px;
+}
+
+/* --- Étkezésnapló mobil nézet --- */
+@media (max-width: 768px) {
+  .semi-circle-container {
+    width: 100%;
+    height: 180px;
+    margin-bottom: 50px;
+  }
+
+  .current-cal {
+    font-size: 1.8rem;
+  }
+
+  .max-cal {
+    font-size: 1.1rem;
+  }
+
+  .etkezes_iras {
+    margin: 20px auto;
+    font-size: 1.6rem;
+  }
+
+  .diet-container {
+    padding: 20px 12px;
+  }
+
+  .diet-body {
+    padding: 16px;
+  }
+
+  /* Étel sor: a név felül teljes szélességben, alatta a 4 makró mező egy sorban */
+  .food-header-row,
+  .food-input-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 32px;
+    gap: 8px;
+  }
+
+  .food-header-row .col-name {
+    display: none;
+  }
+
+  .food-input-row {
+    border-bottom: 1px solid #eee;
+  }
+
+  .food-input-row .col-name {
+    grid-column: 1 / -1;
+  }
+
+  .col-action {
+    width: auto;
+  }
+
+  .food-input-row input {
+    padding: 8px 4px;
+  }
 }
