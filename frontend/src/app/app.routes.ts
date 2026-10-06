@@ -5,6 +5,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { WorkoutLogComponent } from './components/workout-log/workout-log.component';
 import { AuthGuard } from './services/auth.guard';
 import {MealLogComponent} from './components/meal-log/meal-log.component';
+import { StatsComponent } from './components/stats/stats.component';
 
 export const routes: Routes = [
   // Ha a felhasználó a localhost:4200-ra jön, vigyük a /home-ra
@@ -23,6 +24,12 @@ export const routes: Routes = [
   {
     path: 'diet',
     component: MealLogComponent,
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'stats',
+    component: StatsComponent,
     canActivate: [AuthGuard]
   },
 

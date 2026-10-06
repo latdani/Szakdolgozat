@@ -1,0 +1,34 @@
+<div class="stats-page">
+  <h1 class="stats-title">Statisztikák</h1>
+
+  <div *ngIf="loading" class="stats-loading">Adatok betöltése...</div>
+
+  <div class="stats-grid">
+    <div class="stats-card">
+      <h3>Heti edzésszám</h3>
+      <p class="stats-subtitle">Edzések száma hetente, az utolsó 8 hétben</p>
+      <p *ngIf="!loading && !hasWorkouts" class="stats-empty">Még nincs rögzített edzésed.</p>
+      <div class="chart-box" [hidden]="!hasWorkouts">
+        <canvas #weeklyCanvas></canvas>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <h3>Edzésvolumen</h3>
+      <p class="stats-subtitle">Súly × szett × ismétlés összesen, edzésenként (utolsó 20 edzés)</p>
+      <p *ngIf="!loading && !hasWorkouts" class="stats-empty">Még nincs rögzített edzésed.</p>
+      <div class="chart-box" [hidden]="!hasWorkouts">
+        <canvas #volumeCanvas></canvas>
+      </div>
+    </div>
+
+    <div class="stats-card stats-card-wide">
+      <h3>Napi kalóriabevitel</h3>
+      <p class="stats-subtitle">Az utolsó 14 nap, a szaggatott vonal a napi {{ dailyGoal }} kcal cél</p>
+      <p *ngIf="!loading && !hasMeals" class="stats-empty">Még nincs rögzített étkezésed.</p>
+      <div class="chart-box" [hidden]="!hasMeals">
+        <canvas #caloriesCanvas></canvas>
+      </div>
+    </div>
+  </div>
+</div>
