@@ -21,14 +21,24 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
-  // 3. Ellenőrzi, hogy be van-e jelentkezve valaki
-  isLoggedIn(): boolean {
-    return localStorage.getItem('user') !== null;
+  // 3. A szervertől kapott bejelentkezési token (JWT) tárolása és lekérése
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
   }
 
-  // 4. Kijelentkezés (törli az adatokat)
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  // 4. Ellenőrzi, hogy be van-e jelentkezve valaki (token nélkül a backend úgyis elutasítana)
+  isLoggedIn(): boolean {
+    return localStorage.getItem('user') !== null && this.getToken() !== null;
+  }
+
+  // 5. Kijelentkezés (törli az adatokat)
   logout(): void {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   }
 
   // Regisztráció hívása

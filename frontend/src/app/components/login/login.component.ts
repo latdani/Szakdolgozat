@@ -42,8 +42,9 @@ export class LoginComponent implements OnInit { // Hozzáadva: implements OnInit
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: (res: any) => {
-          // 1. Elmentjük a kapott júzert a localStorage-ba
+          // 1. Elmentjük a kapott júzert és a tokent a localStorage-ba
           this.authService.setUser(res.user);
+          this.authService.setToken(res.token);
 
           // 2. Visszajelzés és átirányítás a főoldalra
           console.log('Sikeres belépés, adatok mentve!');

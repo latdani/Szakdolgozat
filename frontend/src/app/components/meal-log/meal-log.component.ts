@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MealService } from '../../services/meal.service';
-import { AuthService } from '../../services/auth.service';
 
 
 
@@ -19,8 +18,7 @@ export class MealLogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private mealService: MealService,
-    private authService: AuthService
+    private mealService: MealService
   ) {}
 
   // Add hozzá ezeket a változókat az osztály elejéhez (a mealForm alá):
@@ -46,10 +44,7 @@ export class MealLogComponent implements OnInit {
   }
 
   loadMeals() {
-    const user = this.authService.getUser();
-    if (!user?.id) return;
-
-    this.mealService.getMeals(user.id).subscribe({
+    this.mealService.getMeals().subscribe({
       next: (data) => {
         this.meals = data;
         this.updateSavedCalories();
@@ -116,18 +111,14 @@ export class MealLogComponent implements OnInit {
     // 1. Biztosra megyünk, hogy a kalóriák ki vannak számolva
     this.calculateCalories();
 
-    // 2. A bejelentkezett felhasználó ID-ja (az AuthGuard miatt mindig van belépett user)
-    const user = this.authService.getUser();
-    if (!user?.id) return;
-
-    // 3. Összeállítjuk a teljes csomagot a MongoDB-nek
+    // 2. Összeállítjuk a teljes csomagot a MongoDB-nek
+    // (a felhasználó azonosítóját a backend a tokenből veszi)
     const mealDataToSend = {
       ...this.mealForm.value,                   // Ebben van a mealType és a foods tömb
-      totalCalories: this.currentFormCalories,  // Az aktuális űrlap kalóriája
-      userId: user.id                           // A bejelentkezett felhasználó azonosítója
+      totalCalories: this.currentFormCalories   // Az aktuális űrlap kalóriája
     };
 
-    // 4. Elküldjük a Backendnek
+    // 3. Elküldjük a Backendnek
     this.mealService.addMeal(mealDataToSend).subscribe({
       next: (res: any) => {
         // --- SIKERES MENTÉS UTÁNI TAKARÍTÁS ÉS FÉLHOLD FRISSÍTÉS ---

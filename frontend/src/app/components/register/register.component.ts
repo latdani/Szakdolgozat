@@ -46,6 +46,7 @@ export class RegisterComponent {
           // Elmentjük a szervertől kapott felhasználói adatokat az AuthService-en keresztül
           if (res.user) {
             this.authService.setUser(res.user);
+            this.authService.setToken(res.token);
           }
 
           // 2. ÁTIRÁNYÍTÁS A FŐOLDALRA
