@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class MealLogComponent implements OnInit {
   mealForm!: FormGroup;
+  meals: any[] = []; // A felhasználó mentett étkezései (legújabb elöl)
 
   constructor(
     private fb: FormBuilder,
@@ -39,6 +40,31 @@ export class MealLogComponent implements OnInit {
     this.mealForm.valueChanges.subscribe(() => {
       this.calculateCalories();
     });
+
+    // 3. Betöltjük a korábban mentett étkezéseket
+    this.loadMeals();
+  }
+
+  loadMeals() {
+    const user = this.authService.getUser();
+    if (!user?.id) return;
+
+    this.mealService.getMeals(user.id).subscribe({
+      next: (data) => {
+        this.meals = data;
+        this.updateSavedCalories();
+      },
+      error: (err) => console.error('Hiba az étkezések lekérésekor:', err)
+    });
+  }
+
+  // A mai napon mentett étkezések kalóriáit adja össze (ezt mutatja a félhold)
+  updateSavedCalories() {
+    const today = new Date().toDateString();
+    this.savedDailyCalories = this.meals
+      .filter(meal => new Date(meal.date).toDateString() === today)
+      .reduce((sum, meal) => sum + (meal.totalCalories || 0), 0);
+    this.calculateCalories();
   }
 
 // ÚJ FÜGGVÉNYEK: Másold be ezeket a fájl aljára (az onSubmit fölé/alá)
@@ -90,27 +116,25 @@ export class MealLogComponent implements OnInit {
     // 1. Biztosra megyünk, hogy a kalóriák ki vannak számolva
     this.calculateCalories();
 
-    // 2. Megszerezzük a felhasználó ID-ját.
-    // Ha van már loginod és eltároltad az ID-t a localStorage-ben, akkor így szeded ki.
-    // (Ha még nincs kész a login, a jobb oldali 'kamu' ID-t fogja használni, hogy tudj tesztelni!)
-    const loggedInUserId = localStorage.getItem('userId') || '60d5ecb8b392d700153ef123';
+    // 2. A bejelentkezett felhasználó ID-ja (az AuthGuard miatt mindig van belépett user)
+    const user = this.authService.getUser();
+    if (!user?.id) return;
 
     // 3. Összeállítjuk a teljes csomagot a MongoDB-nek
     const mealDataToSend = {
       ...this.mealForm.value,                   // Ebben van a mealType és a foods tömb
       totalCalories: this.currentFormCalories,  // Az aktuális űrlap kalóriája
-      userId: loggedInUserId                    // A hiányzó felhasználó azonosító!
+      userId: user.id                           // A bejelentkezett felhasználó azonosítója
     };
 
     // 4. Elküldjük a Backendnek
     this.mealService.addMeal(mealDataToSend).subscribe({
       next: (res: any) => {
-        console.log('Sikeres mentés!', res);
-
         // --- SIKERES MENTÉS UTÁNI TAKARÍTÁS ÉS FÉLHOLD FRISSÍTÉS ---
 
-        // Hozzáadjuk a most megevett kalóriát a napi "memóriához"
-        this.savedDailyCalories += this.currentFormCalories;
+        // Az új étkezés a lista elejére kerül, a napi összeg ebből számolódik újra
+        this.meals.unshift(res);
+        this.updateSavedCalories();
 
         // Kiürítjük a formot
         this.mealForm.reset();
@@ -127,7 +151,20 @@ export class MealLogComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Hiba a mentés során:', err);
+        alert('Hiba történt a mentéskor!');
       }
+    });
+  }
+
+  deleteMeal(id: string) {
+    if (!confirm('Biztosan törölni szeretnéd ezt az étkezést?')) return;
+
+    this.mealService.deleteMeal(id).subscribe({
+      next: () => {
+        this.meals = this.meals.filter(meal => meal._id !== id);
+        this.updateSavedCalories();
+      },
+      error: () => alert('Nem sikerült a törlés!')
     });
   }
 
