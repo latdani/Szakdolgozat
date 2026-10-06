@@ -17,4 +17,8 @@ export class MealService {
   getMeals(userId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${userId}`);
   }
+
+  deleteMeal(mealId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${mealId}`);
+  }
 }

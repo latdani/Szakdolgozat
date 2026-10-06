@@ -24,4 +24,18 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
+// Étkezés törlése azonosító alapján
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedMeal = await Meal.findByIdAndDelete(req.params.id);
+        if (!deletedMeal) {
+            return res.status(404).json({ message: "Az étkezés nem található" });
+        }
+        res.status(200).json({ message: "Étkezés törölve" });
+    } catch (err) {
+        console.error("Hiba az étkezés törlésekor:", err);
+        res.status(500).json({ message: "Hiba a törlés közben" });
+    }
+});
+
 module.exports = router;
