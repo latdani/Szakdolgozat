@@ -34,7 +34,7 @@
           <div class="custom-select-wrapper">
             <div class="select-trigger" (click)="toggleDropdown()" [class.opened]="dropdownOpen">
               <span>{{ mealForm.get('mealType')?.value || 'Válassz étkezést...' }}</span>
-              <i class="bi bi-chevron-down arrow-icon"></i>
+              <i class="fas fa-chevron-down arrow-icon"></i>
             </div>
 
             <div class="options-list" *ngIf="dropdownOpen">
