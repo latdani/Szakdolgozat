@@ -20,6 +20,7 @@ export class WorkoutLogComponent implements OnInit {
   workouts: any[] = [];
   showHistory: boolean = true;
   loading: boolean = false;
+  editingWorkoutId: string | null = null; // Ha nem null, az űrlap ezt az edzést szerkeszti
 
   constructor(
     private fb: FormBuilder,
@@ -59,6 +60,42 @@ export class WorkoutLogComponent implements OnInit {
     });
   }
 
+  // Váltás az előzmények és az űrlap között; az előzményekhez visszalépve a szerkesztés megszakad
+  toggleView() {
+    if (this.showHistory) {
+      this.showHistory = false;
+    } else {
+      this.cancelEdit();
+    }
+  }
+
+  // Egy mentett edzés betöltése az űrlapba szerkesztéshez
+  startEdit(workout: any) {
+    this.editingWorkoutId = workout._id;
+    this.workoutForm.get('muscleGroup')?.setValue(workout.muscleGroup);
+    this.workoutForm.setControl('exercises', this.fb.array(
+      workout.exercises.map((ex: any) => {
+        const group = this.createExercise();
+        group.patchValue(ex);
+        return group;
+      })
+    ));
+    this.showHistory = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.resetForm();
+    this.showHistory = true;
+  }
+
+  // Üres űrlap egy gyakorlat sorral, szerkesztési mód vége
+  private resetForm() {
+    this.editingWorkoutId = null;
+    this.workoutForm.reset();
+    this.workoutForm.setControl('exercises', this.fb.array([this.createExercise()]));
+  }
+
   deleteWorkout(id: string) {
     if (confirm('Biztosan törölni szeretnéd ezt az edzést?')) {
       this.workoutService.deleteWorkout(id).subscribe({
@@ -91,19 +128,19 @@ export class WorkoutLogComponent implements OnInit {
         exercises: this.workoutForm.value.exercises
       };
 
-      this.workoutService.saveWorkout(workoutData).subscribe({
+      // Szerkesztésnél módosítás, egyébként új edzés mentése
+      const request = this.editingWorkoutId
+        ? this.workoutService.updateWorkout(this.editingWorkoutId, workoutData)
+        : this.workoutService.saveWorkout(workoutData);
+      const successMessage = this.editingWorkoutId ? 'Edzés sikeresen módosítva!' : 'Edzés sikeresen mentve!';
+
+      request.subscribe({
         next: () => {
           this.loading = false;
-          alert('Edzés sikeresen mentve!');
+          alert(successMessage);
           this.showHistory = true;
           this.loadHistory();
-          this.workoutForm.reset();
-
-          // FormArray kitakarítása és egy üres sor hozzáadása
-          while (this.exercises.length !== 0) {
-            this.exercises.removeAt(0);
-          }
-          this.addExercise();
+          this.resetForm();
         },
         error: (err) => {
           this.loading = false;

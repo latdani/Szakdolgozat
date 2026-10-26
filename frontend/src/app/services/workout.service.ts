@@ -20,6 +20,11 @@ export class WorkoutService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  // Meglévő edzés módosítása
+  updateWorkout(id: string, workoutData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, workoutData);
+  }
+
   deleteWorkout(id: string) {
     return this.http.delete(`/api/workouts/${id}`);
   }

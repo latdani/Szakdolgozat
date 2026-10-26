@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Ez kell az *ngIf-hez
 import { RouterModule, Router } from '@angular/router'; // Ez kell a routerLink-hez
 import { AuthService } from '../../services/auth.service'; // Beimportáljuk a szervizt
+import { FooterComponent } from '../../footer/footer.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   // Az imports tömbbe be kell tennünk a modulokat, hogy a HTML ismerje őket
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FooterComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

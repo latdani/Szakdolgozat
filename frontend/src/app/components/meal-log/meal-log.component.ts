@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MealService } from '../../services/meal.service';
+import { ProfileService } from '../../services/profile.service';
 
 
 
@@ -15,14 +16,16 @@ import { MealService } from '../../services/meal.service';
 export class MealLogComponent implements OnInit {
   mealForm!: FormGroup;
   meals: any[] = []; // A felhasználó mentett étkezései (legújabb elöl)
+  editingMealId: string | null = null; // Ha nem null, az űrlap ezt az étkezést szerkeszti
 
   constructor(
     private fb: FormBuilder,
-    private mealService: MealService
+    private mealService: MealService,
+    private profileService: ProfileService
   ) {}
 
   // Add hozzá ezeket a változókat az osztály elejéhez (a mealForm alá):
-  dailyGoal: number = 2500; // Egy fix napi cél (később majd jöhet adatbázisból)
+  dailyGoal: number = 2500; // A profilban beállított napi cél (betöltésig az alapértelmezett)
   currentCalories: number = 0;
   savedDailyCalories: number = 0;
   currentFormCalories: number = 0;
@@ -39,8 +42,12 @@ export class MealLogComponent implements OnInit {
       this.calculateCalories();
     });
 
-    // 3. Betöltjük a korábban mentett étkezéseket
+    // 3. Betöltjük a korábban mentett étkezéseket és a profilból a napi kalóriacélt
     this.loadMeals();
+    this.profileService.getProfile().subscribe({
+      next: (profile) => this.dailyGoal = profile.dailyCalorieGoal,
+      error: (err) => console.error('Hiba a profil lekérésekor:', err)
+    });
   }
 
   loadMeals() {
@@ -53,11 +60,12 @@ export class MealLogComponent implements OnInit {
     });
   }
 
-  // A mai napon mentett étkezések kalóriáit adja össze (ezt mutatja a félhold)
+  // A mai napon mentett étkezések kalóriáit adja össze (ezt mutatja a félhold).
+  // A szerkesztés alatt álló étkezés kimarad, mert annak kalóriája az űrlapban van (különben duplán számolnánk)
   updateSavedCalories() {
     const today = new Date().toDateString();
     this.savedDailyCalories = this.meals
-      .filter(meal => new Date(meal.date).toDateString() === today)
+      .filter(meal => meal._id !== this.editingMealId && new Date(meal.date).toDateString() === today)
       .reduce((sum, meal) => sum + (meal.totalCalories || 0), 0);
     this.calculateCalories();
   }
@@ -118,27 +126,22 @@ export class MealLogComponent implements OnInit {
       totalCalories: this.currentFormCalories   // Az aktuális űrlap kalóriája
     };
 
-    // 3. Elküldjük a Backendnek
-    this.mealService.addMeal(mealDataToSend).subscribe({
+    // 3. Elküldjük a Backendnek: szerkesztésnél módosítás, egyébként új étkezés
+    const request = this.editingMealId
+      ? this.mealService.updateMeal(this.editingMealId, mealDataToSend)
+      : this.mealService.addMeal(mealDataToSend);
+
+    request.subscribe({
       next: (res: any) => {
-        // --- SIKERES MENTÉS UTÁNI TAKARÍTÁS ÉS FÉLHOLD FRISSÍTÉS ---
-
-        // Az új étkezés a lista elejére kerül, a napi összeg ebből számolódik újra
-        this.meals.unshift(res);
-        this.updateSavedCalories();
-
-        // Kiürítjük a formot
-        this.mealForm.reset();
-
-        // Visszaállítjuk a legördülőt alapértelmezettre
-        this.mealForm.get('mealType')?.setValue('');
-
-        // Visszateszünk egyetlen üres sort az ételeknek
-        this.mealForm.setControl('foods', this.fb.array([this.createFoodGroup()]));
-
-        // Újraszámoljuk a félholdat (mivel az űrlap üres lett, csak a savedDailyCalories fog megjelenni!)
-        this.calculateCalories();
-
+        if (this.editingMealId) {
+          // A módosított étkezés a régi helyére kerül
+          this.meals = this.meals.map(meal => meal._id === res._id ? res : meal);
+        } else {
+          // Az új étkezés a lista elejére kerül
+          this.meals.unshift(res);
+        }
+        // Kiürítjük a formot, a félhold a napi összegből újraszámolódik
+        this.resetForm();
       },
       error: (err: any) => {
         console.error('Hiba a mentés során:', err);
@@ -147,13 +150,45 @@ export class MealLogComponent implements OnInit {
     });
   }
 
+  // Egy mentett étkezés betöltése az űrlapba szerkesztéshez
+  startEdit(meal: any) {
+    this.editingMealId = meal._id;
+    this.mealForm.get('mealType')?.setValue(meal.mealType);
+    this.mealForm.setControl('foods', this.fb.array(
+      meal.foods.map((food: any) => {
+        const group = this.createFoodGroup();
+        group.patchValue(food);
+        return group;
+      })
+    ));
+    this.updateSavedCalories();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  // Üres űrlap egy étel sorral, szerkesztési mód vége
+  private resetForm() {
+    this.editingMealId = null;
+    this.mealForm.reset();
+    this.mealForm.get('mealType')?.setValue('');
+    this.mealForm.setControl('foods', this.fb.array([this.createFoodGroup()]));
+    this.updateSavedCalories();
+  }
+
   deleteMeal(id: string) {
     if (!confirm('Biztosan törölni szeretnéd ezt az étkezést?')) return;
 
     this.mealService.deleteMeal(id).subscribe({
       next: () => {
         this.meals = this.meals.filter(meal => meal._id !== id);
-        this.updateSavedCalories();
+        if (this.editingMealId === id) {
+          this.resetForm(); // A szerkesztett étkezés törlődött, nincs mit tovább szerkeszteni
+        } else {
+          this.updateSavedCalories();
+        }
       },
       error: () => alert('Nem sikerült a törlés!')
     });

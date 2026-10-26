@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { WorkoutService } from '../../services/workout.service';
 import { MealService } from '../../services/meal.service';
+import { ProfileService } from '../../services/profile.service';
 
 Chart.register(...registerables);
 
@@ -27,7 +28,7 @@ export class StatsComponent implements OnInit, OnDestroy {
   @ViewChild('volumeCanvas', { static: true }) volumeCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('caloriesCanvas', { static: true }) caloriesCanvas!: ElementRef<HTMLCanvasElement>;
 
-  dailyGoal = 2500; // Egyelőre fix, mint az étkezésnaplóban (később a profilból jön)
+  dailyGoal = 2500; // A profilban beállított napi kalóriacél (a lekérésig az alapértelmezett)
   loading = true;
   hasWorkouts = false;
   hasMeals = false;
@@ -37,17 +38,20 @@ export class StatsComponent implements OnInit, OnDestroy {
   constructor(
     private workoutService: WorkoutService,
     private mealService: MealService,
+    private profileService: ProfileService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // A két lekérés párhuzamosan fut, a diagramok akkor készülnek el, ha mindkettő megjött
+    // A három lekérés párhuzamosan fut, a diagramok akkor készülnek el, ha mind megjött
     forkJoin({
       workouts: this.workoutService.getUserWorkouts(),
-      meals: this.mealService.getMeals()
+      meals: this.mealService.getMeals(),
+      profile: this.profileService.getProfile()
     }).subscribe({
-      next: ({ workouts, meals }) => {
+      next: ({ workouts, meals, profile }) => {
         this.loading = false;
+        this.dailyGoal = profile.dailyCalorieGoal;
         this.hasWorkouts = workouts.length > 0;
         this.hasMeals = meals.length > 0;
         // Előbb megjelenítjük a diagramok dobozait, hogy a Chart.js a valós méretükkel rajzoljon
