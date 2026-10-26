@@ -1,0 +1,53 @@
+/* A Rólunk oldal fő stílusai a styles.css-ben vannak (.about-hero, .mission, .values, .team) */
+
+/* 4 kártya: széles kijelzőn egy sorban, közepesen 2×2, mobilon egymás alatt */
+.values-grid,
+.team-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 992px) {
+  .values-grid,
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .values-grid,
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tech-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.author-card {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.author-card h2 {
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+
+.author-card p {
+  margin-bottom: 1.2rem;
+}
+
+.author-card .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}

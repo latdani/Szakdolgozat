@@ -1,0 +1,71 @@
+<section class="about-hero">
+  <div class="container">
+    <div class="about-hero-content">
+      <h1>Rólunk</h1>
+      <p>Ismerd meg a LiftLog történetét</p>
+    </div>
+  </div>
+</section>
+
+<section class="mission">
+  <div class="container">
+    <div class="mission-content">
+      <div class="mission-text">
+        <h2>A projektről</h2>
+        <p>
+          A LiftLog egy edzés- és étkezésnapló webalkalmazás, amely szakdolgozatként készül.
+          Célja, hogy egy helyen lehessen vezetni az edzéseket és az étkezéseket, és látni lehessen a fejlődést.
+        </p>
+        <p>
+          Sok népszerű alkalmazás csak az egyiket tudja jól: vagy az edzést, vagy a táplálkozást követi.
+          A LiftLog a kettőt egy egyszerű, áttekinthető felületen köti össze.
+        </p>
+      </div>
+      <div class="mission-image">
+        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Egészséges étel egy tálban">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="values">
+  <div class="container">
+    <h2>Mit tud a LiftLog?</h2>
+    <div class="values-grid">
+      <div class="value-card" *ngFor="let f of features">
+        <div class="value-icon"><i class="fas {{ f.icon }}"></i></div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.text }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="team">
+  <div class="container">
+    <h2>Felhasznált technológiák</h2>
+    <div class="team-grid">
+      <div class="team-member" *ngFor="let t of technologies">
+        <div class="tech-icon"><i class="{{ t.icon }}"></i></div>
+        <h3>{{ t.title }}</h3>
+        <p>{{ t.text }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="container">
+    <div class="author-card">
+      <div class="value-icon"><i class="fas fa-user-graduate"></i></div>
+      <h2>Készítette</h2>
+      <p class="member-role">Látkóczki Dániel</p>
+      <p>A LiftLog forráskódja nyilvános, a GitHubon bárki megtekintheti.</p>
+      <a class="btn btn-primary" href="https://github.com/latdani/Szakdolgozat" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i> Forráskód a GitHubon
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

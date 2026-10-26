@@ -19,6 +19,10 @@ export class MealService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  updateMeal(mealId: string, mealData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${mealId}`, mealData);
+  }
+
   deleteMeal(mealId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${mealId}`);
   }

@@ -1,0 +1,57 @@
+<div class="profile-page">
+  <h1 class="profile-title"><i class="fas fa-user-circle"></i> Profilom</h1>
+
+  <div *ngIf="loading" class="profile-loading">Adatok betöltése...</div>
+
+  <form *ngIf="!loading" [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-card">
+    <div class="profile-field">
+      <label>E-mail cím</label>
+      <div class="profile-readonly">{{ email }}</div>
+    </div>
+
+    <div class="profile-field">
+      <label for="profile_name">Név</label>
+      <input id="profile_name" formControlName="name"
+             [class.is-invalid]="profileForm.get('name')?.invalid">
+      <span *ngIf="profileForm.get('name')?.invalid" class="validation-error">A név megadása kötelező.</span>
+    </div>
+
+    <div class="profile-row">
+      <div class="profile-field">
+        <label for="profile_weight">Testsúly (kg)</label>
+        <input id="profile_weight" type="number" formControlName="currentWeight"
+               [class.is-invalid]="profileForm.get('currentWeight')?.invalid">
+        <span *ngIf="profileForm.get('currentWeight')?.invalid" class="validation-error">0 és 500 kg között.</span>
+      </div>
+
+      <div class="profile-field">
+        <label for="profile_calories">Napi kalóriacél (kcal)</label>
+        <input id="profile_calories" type="number" formControlName="dailyCalorieGoal"
+               [class.is-invalid]="profileForm.get('dailyCalorieGoal')?.invalid">
+        <span *ngIf="profileForm.get('dailyCalorieGoal')?.invalid" class="validation-error">500 és 10 000 kcal között.</span>
+      </div>
+    </div>
+
+    <div class="profile-field">
+      <label>Célom</label>
+      <div class="goal-options">
+        <label *ngFor="let g of goalOptions" class="goal-option"
+               [class.selected]="profileForm.get('goal')?.value === g.value">
+          <input type="radio" formControlName="goal" [value]="g.value">
+          {{ g.label }}
+        </label>
+      </div>
+    </div>
+
+    <p class="profile-hint">
+      A napi kalóriacélt az étkezésnapló és a statisztikák oldal használja.
+    </p>
+
+    <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+    <div *ngIf="message" class="profile-success">{{ message }}</div>
+
+    <button type="submit" class="btn-save" [disabled]="profileForm.invalid || saving">
+      {{ saving ? 'Mentés...' : 'Mentés' }}
+    </button>
+  </form>
+</div>

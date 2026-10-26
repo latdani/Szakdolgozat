@@ -6,6 +6,8 @@ import { WorkoutLogComponent } from './components/workout-log/workout-log.compon
 import { AuthGuard } from './services/auth.guard';
 import {MealLogComponent} from './components/meal-log/meal-log.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { AboutComponent } from './components/about/about.component';
 
 export const routes: Routes = [
   // Ha a felhasználó a localhost:4200-ra jön, vigyük a /home-ra
@@ -15,6 +17,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'about', component: AboutComponent },
   {
     path: 'workout-log',
     component: WorkoutLogComponent,
@@ -30,6 +33,11 @@ export const routes: Routes = [
   {
     path: 'stats',
     component: StatsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
     canActivate: [AuthGuard]
   },
 

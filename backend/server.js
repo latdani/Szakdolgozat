@@ -41,12 +41,16 @@ mongoose.connect(mongoURI)
 // --- ADATMODELLEK ---
 
 // Felhasználó modell
+// A cél lehetséges értékei: NotSet (nincs megadva), MuscleGain (izomnövelés), WeightLoss (fogyás), Maintain (szinten tartás)
+const GOALS = ['NotSet', 'MuscleGain', 'WeightLoss', 'Maintain'];
+
 const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String },
-    goal: { type: String, default: 'NotSet' },
-    currentWeight: { type: Number, default: 0 }
+    goal: { type: String, enum: GOALS, default: 'NotSet' },
+    currentWeight: { type: Number, default: 0, min: 0, max: 500 },
+    dailyCalorieGoal: { type: Number, default: 2500, min: 500, max: 10000 }
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -144,7 +148,52 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Az edzés végpontok csak bejelentkezve érhetők el, a felhasználó azonosítója a tokenből jön (req.userId)
+// A profil és az edzés végpontok csak bejelentkezve érhetők el, a felhasználó azonosítója a tokenből jön (req.userId)
+
+// A profil mezői, amiket a felhasználó láthat és módosíthat (a jelszó soha nem megy ki)
+const PROFILE_FIELDS = 'name email goal currentWeight dailyCalorieGoal';
+
+// Saját profil lekérése
+app.get('/api/profile', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select(PROFILE_FIELDS);
+        if (!user) {
+            return res.status(404).json({ message: "A felhasználó nem található" });
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        console.error("Profil lekérési hiba:", err);
+        res.status(500).json({ message: "Nem sikerült lekérni a profilt." });
+    }
+});
+
+// Saját profil módosítása (név, testsúly, cél, napi kalóriacél)
+app.put('/api/profile', auth, async (req, res) => {
+    try {
+        const { name, goal, currentWeight, dailyCalorieGoal } = req.body;
+
+        if (!name || !name.trim()) {
+            return res.status(400).json({ message: "A név megadása kötelező!" });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.userId,
+            { name: name.trim(), goal, currentWeight, dailyCalorieGoal },
+            { returnDocument: 'after', runValidators: true } // runValidators: a séma min/max/enum szabályai itt is érvényesek
+        ).select(PROFILE_FIELDS);
+
+        if (!user) {
+            return res.status(404).json({ message: "A felhasználó nem található" });
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        if (err.name === 'ValidationError' || err.name === 'CastError') {
+            return res.status(400).json({ message: "Hibás profiladatok!" });
+        }
+        console.error("Profil mentési hiba:", err);
+        res.status(500).json({ message: "Nem sikerült menteni a profilt." });
+    }
+});
 
 // 3. Edzés mentése
 app.post('/api/workouts', auth, async (req, res) => {
@@ -174,6 +223,33 @@ app.get('/api/workouts', auth, async (req, res) => {
     } catch (err) {
         console.error("Lekérdezési hiba:", err);
         res.status(500).json({ message: "Nem sikerült lekérni az edzésmúltat." });
+    }
+});
+
+// Edzés módosítása (csak a saját edzését módosíthatja a felhasználó, a dátum marad az eredeti)
+app.put('/api/workouts/:id', auth, async (req, res) => {
+    try {
+        const { muscleGroup, exercises } = req.body;
+
+        if (!muscleGroup || !exercises || exercises.length === 0) {
+            return res.status(400).json({ message: "Hiányzó adatok az edzés mentéséhez!" });
+        }
+
+        const updatedWorkout = await Workout.findOneAndUpdate(
+            { _id: req.params.id, userId: req.userId },
+            { muscleGroup, exercises },
+            { returnDocument: 'after', runValidators: true }
+        );
+        if (!updatedWorkout) {
+            return res.status(404).json({ message: "Az edzés nem található" });
+        }
+        res.status(200).json(updatedWorkout);
+    } catch (err) {
+        if (err.name === 'ValidationError' || err.name === 'CastError') {
+            return res.status(400).json({ message: "Hibás edzésadatok!" });
+        }
+        console.error("Workout módosítási hiba:", err);
+        res.status(500).json({ message: "Nem sikerült módosítani az edzést." });
     }
 });
 

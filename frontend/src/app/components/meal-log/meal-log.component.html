@@ -23,7 +23,7 @@
 <div class="diet-container">
   <div class="diet-card">
     <div class="diet-header">
-      <h4>Étkezés rögzítése</h4>
+      <h4>{{ editingMealId ? 'Étkezés módosítása' : 'Étkezés rögzítése' }}</h4>
     </div>
 
     <div class="diet-body">
@@ -82,7 +82,12 @@
 
         <div class="diet-footer">
           <button type="button" class="add-row-btn" (click)="addFood()">+ Új sor</button>
-          <button type="submit" class="save-btn" [disabled]="mealForm.invalid">Mentés</button>
+          <div class="diet-footer-right">
+            <button type="button" class="cancel-btn" (click)="cancelEdit()" *ngIf="editingMealId">Mégse</button>
+            <button type="submit" class="save-btn" [disabled]="mealForm.invalid">
+              {{ editingMealId ? 'Módosítás mentése' : 'Mentés' }}
+            </button>
+          </div>
         </div>
 
       </form>
@@ -99,13 +104,16 @@
         Még nincs rögzített étkezésed.
       </div>
 
-      <div class="workout-card" *ngFor="let m of meals">
+      <div class="workout-card" *ngFor="let m of meals" [class.editing]="m._id === editingMealId">
         <div class="card-header">
           <span class="date">{{ m.date | date:'yyyy. MM. dd. HH:mm' }}</span>
 
           <div class="header-right">
             <span class="muscle-tag">{{ m.mealType }}</span>
             <span class="meal-kcal">{{ m.totalCalories }} kcal</span>
+            <button class="btn-edit-entry" (click)="startEdit(m)" title="Szerkesztés">
+              <i class="fas fa-pen"></i>
+            </button>
             <button class="btn-delete-workout" (click)="deleteMeal(m._id)" title="Törlés">
               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>

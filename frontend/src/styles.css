@@ -819,6 +819,11 @@ nav ul {
   margin-right: 15px;
   font-weight: 600;
   color: white;
+  text-decoration: none;
+}
+
+.user-name-display:hover {
+  color: var(--accent);
 }
 
 .auth-buttons {
@@ -974,6 +979,47 @@ button:disabled {
   color: white;
 }
 
+/* Szerkesztés gomb (ceruza) az edzés- és étkezéskártyákon */
+.btn-edit-entry {
+  background: white;
+  color: #166088;
+  border: 1px solid #cfe0ea;
+  border-radius: 6px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-entry:hover {
+  background-color: #166088;
+  color: white;
+}
+
+/* Az éppen szerkesztett bejegyzés kiemelése a listában */
+.workout-card.editing {
+  border: 2px solid #4cb5c3;
+}
+
+/* Szerkesztés megszakítása */
+.cancel-btn {
+  background: white;
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-btn:hover {
+  background: #f0f0f0;
+}
+
 /* Táblázat az előzményekben */
 .exercise-table {
   width: 100%;
@@ -993,6 +1039,12 @@ button:disabled {
 }
 
 /* --- ÚJ EDZÉS FORM STÍLUSOK --- */
+.edit-title {
+  color: #166088;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
 .main-input {
   margin-bottom: 25px;
   display: flex;
@@ -1177,6 +1229,11 @@ input {
 }
 
 .save-btn:disabled { background: #ccc; }
+
+.diet-footer-right {
+  display: flex;
+  gap: 10px;
+}
 
 .del-btn {
   background: none;
