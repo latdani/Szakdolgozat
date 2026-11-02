@@ -6,7 +6,9 @@
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run backend\" \"npm run frontend\"",
     "frontend": "npm start --prefix frontend",
     "backend": "npm start --prefix backend",
-    "install-all": "npm install && npm install --prefix frontend && npm install --prefix backend"
+    "install-all": "npm install && npm install --prefix frontend && npm install --prefix backend",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm start --prefix backend"
   },
   "private": true,
   "devDependencies": {

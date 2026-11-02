@@ -266,6 +266,18 @@ app.delete('/api/workouts/:id', auth, async (req, res) => {
     }
 });
 
+// --- FRONTEND KISZOLGÁLÁSA (élesben) ---
+// Ha létezik a lefordított Angular app (npm run build), a backend szolgálja ki, így egy címen fut az egész.
+// Fejlesztéskor (npm run dev) ez nem kell, ott az ng serve adja a frontendet.
+const path = require('path');
+const fs = require('fs');
+const frontendDir = path.join(__dirname, '../frontend/dist/liftlog-frontend/browser');
+if (fs.existsSync(frontendDir)) {
+    app.use(express.static(frontendDir));
+    // Minden nem /api útvonal az Angular routerhez megy (pl. /stats frissítéskor sem 404)
+    app.get(/^(?!\/api).*/, (req, res) => res.sendFile(path.join(frontendDir, 'index.html')));
+}
+
 app.listen(PORT, () => {
     console.log(`🚀 Szerver fut: http://localhost:${PORT}`);
 });
