@@ -1,0 +1,42 @@
+<header>
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-dumbbell"></i>
+        <h1>LiftLog</h1>
+      </div>
+
+      <nav>
+        <!-- Mobilon a menü csak a hamburger gombra nyílik le; linkre kattintva bezáródik -->
+        <ul [class.show]="menuOpen" (click)="menuOpen = false">
+          <li><a routerLink="/home" routerLinkActive="active">Kezdőlap</a></li>
+          <li><a routerLink="/workout-log" routerLinkActive="active">Edzésnapló</a></li>
+          <li><a routerLink="/diet" routerLinkActive="active">Étkezésnapló</a></li>
+          <li><a routerLink="/stats" routerLinkActive="active">Statisztikák</a></li>
+          <li><a routerLink="/about" routerLinkActive="active">Rólunk</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <ng-container *ngIf="!authService.isLoggedIn()">
+          <button class="btn btn-outline" routerLink="/login">Bejelentkezés</button>
+          <button class="btn btn-primary" routerLink="/register">Regisztráció</button>
+        </ng-container>
+
+        <div *ngIf="authService.isLoggedIn()" class="user-logged-in">
+          <a class="user-name-display" routerLink="/profile" title="Profilom">
+            <i class="fas fa-user-circle"></i> {{ authService.getUser()?.name }}
+          </a>
+          <button class="btn btn-logout-nav" (click)="onLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="mobile-menu-btn" type="button" (click)="menuOpen = !menuOpen"
+              [attr.aria-expanded]="menuOpen" aria-label="Menü">
+        <i class="fas" [class.fa-bars]="!menuOpen" [class.fa-times]="menuOpen"></i>
+      </button>
+    </div>
+  </div>
+</header>

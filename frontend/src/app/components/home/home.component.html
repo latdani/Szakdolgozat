@@ -1,0 +1,97 @@
+
+
+<section class="hero">
+  <div class="container">
+    <h2>Kövesd nyomon edzéseidet és étkezéseidet</h2>
+    <p>A LiftLog segítségével könnyedén naplózhatod edzéseidet, nyomon követheted a tápanyagbeviteleted, és követheted fejlődésedet.</p>
+
+    <button *ngIf="authService.isLoggedIn()"
+            class="btn btn-primary btn-large"
+            routerLink="/workout-log"> Irány az edzéshez!
+    </button>
+
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>Főbb funkciók</h2>
+      <p>A LiftLog mindent megad, amire szükséged van az edzéseid és étrended hatékony nyomon követéséhez</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-user"></i></div>
+        <h3>Felhasználói fiók</h3>
+        <p>Biztonságos regisztráció és bejelentkezés, személyre szabott profilbeállítások</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-dumbbell"></i></div>
+        <h3>Edzésnapló</h3>
+        <p>Rögzítsd edzéseidet, gyakorlataidat, súlyokat és ismétléseket</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-utensils"></i></div>
+        <h3>Étkezésnapló</h3>
+        <p>Kövesd nyomon napi étkezéseidet és tápanyagbeviteleted</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Statisztikák</h3>
+        <p>Elemezd fejlődésedet részletes diagramokkal és jelentésekkel</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-preview">
+  <div class="container">
+    <div class="dashboard-container">
+      <div class="dashboard-content">
+        <h2>Átlátható irányítópult</h2>
+        <p>A LiftLog egyszerű és áttekinthető felületen mutatja be a legfontosabb információkat.</p>
+        <button class="btn btn-primary" [routerLink]="authService.isLoggedIn() ? '/stats' : '/login'">
+          Tekintsd meg az irányítópultot
+        </button>
+      </div>
+      <div class="dashboard-image">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="LiftLog Dashboard">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Saját összesítő: csak belépve, a felhasználó saját adataiból -->
+<section *ngIf="summary" class="stats">
+  <div class="container">
+    <h2 class="summary-title">Saját összesítőd</h2>
+    <div class="stats-grid">
+      <a class="stat-card" routerLink="/workout-log">
+        <div class="stat-number">{{ summary.workoutsThisWeek }}</div>
+        <div class="stat-label">Edzés ezen a héten</div>
+        <div class="stat-sub">Összesen: {{ summary.totalWorkouts }}</div>
+      </a>
+      <a class="stat-card" routerLink="/diet">
+        <div class="stat-number">{{ summary.caloriesToday | number:'1.0-0' }}</div>
+        <div class="stat-label">Mai kalória (kcal)</div>
+        <div class="stat-sub">Cél: {{ summary.dailyCalorieGoal | number:'1.0-0' }} kcal</div>
+      </a>
+      <a class="stat-card" routerLink="/profile">
+        <div class="stat-number">
+          {{ summary.currentWeight ? (summary.currentWeight | number:'1.0-1') : '–' }}
+        </div>
+        <div class="stat-label">Testsúly (kg)</div>
+        <div class="stat-sub" *ngIf="summary.weightChange30 !== null">
+          30 nap: {{ summary.weightChange30 > 0 ? '+' : '' }}{{ summary.weightChange30 | number:'1.0-1' }} kg
+        </div>
+      </a>
+      <a class="stat-card" routerLink="/workout-log">
+        <div class="stat-number">{{ summary.lastWorkout ? (summary.lastWorkout.date | date:'MM. dd.') : '–' }}</div>
+        <div class="stat-label">Utolsó edzés</div>
+        <div class="stat-sub" *ngIf="summary.lastWorkout">{{ summary.lastWorkout.muscleGroup }}</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>
