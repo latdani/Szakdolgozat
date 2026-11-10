@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { WorkoutService } from '../../services/workout.service';
 import { MealService } from '../../services/meal.service';
 import { ProfileService } from '../../services/profile.service';
+import { WeightEntry, WeightService } from '../../services/weight.service';
 
 Chart.register(...registerables);
 
@@ -12,6 +14,7 @@ Chart.register(...registerables);
 const COLOR_WORKOUTS = '#00879b';
 const COLOR_VOLUME = '#2f6fd0';
 const COLOR_CALORIES = '#1e8449';
+const COLOR_WEIGHT = '#8e44ad';
 const COLOR_GOAL = '#95a5a6';
 const COLOR_GRID = '#eeeeee';
 const COLOR_TEXT = '#7f8c8d';
@@ -19,7 +22,7 @@ const COLOR_TEXT = '#7f8c8d';
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.css']
 })
@@ -27,11 +30,14 @@ export class StatsComponent implements OnInit, OnDestroy {
   @ViewChild('weeklyCanvas', { static: true }) weeklyCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('volumeCanvas', { static: true }) volumeCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('caloriesCanvas', { static: true }) caloriesCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('weightCanvas', { static: true }) weightCanvas!: ElementRef<HTMLCanvasElement>;
 
   dailyGoal = 2500; // A profilban beállított napi kalóriacél (a lekérésig az alapértelmezett)
   loading = true;
   hasWorkouts = false;
   hasMeals = false;
+  hasWeights = false;
+  weightSummary = ''; // pl. "82,5 kg → 80,1 kg (-2,4 kg)"
 
   private charts: Chart[] = [];
 
@@ -39,26 +45,31 @@ export class StatsComponent implements OnInit, OnDestroy {
     private workoutService: WorkoutService,
     private mealService: MealService,
     private profileService: ProfileService,
+    private weightService: WeightService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // A három lekérés párhuzamosan fut, a diagramok akkor készülnek el, ha mind megjött
+    // A lekérések párhuzamosan futnak, a diagramok akkor készülnek el, ha mind megjött
     forkJoin({
       workouts: this.workoutService.getUserWorkouts(),
       meals: this.mealService.getMeals(),
-      profile: this.profileService.getProfile()
+      profile: this.profileService.getProfile(),
+      weights: this.weightService.getWeights()
     }).subscribe({
-      next: ({ workouts, meals, profile }) => {
+      next: ({ workouts, meals, profile, weights }) => {
         this.loading = false;
         this.dailyGoal = profile.dailyCalorieGoal;
         this.hasWorkouts = workouts.length > 0;
         this.hasMeals = meals.length > 0;
+        this.hasWeights = weights.length > 0;
+        this.weightSummary = this.summarizeWeights(weights);
         // Előbb megjelenítjük a diagramok dobozait, hogy a Chart.js a valós méretükkel rajzoljon
         this.cdr.detectChanges();
         this.buildWeeklyWorkoutsChart(workouts);
         this.buildVolumeChart(workouts);
         this.buildCaloriesChart(meals);
+        this.buildWeightChart(weights);
       },
       error: (err) => {
         this.loading = false;
@@ -180,6 +191,46 @@ export class StatsComponent implements OnInit, OnDestroy {
       },
       options: this.baseOptions('kcal', 'Nap')
     }));
+  }
+
+  // 4. Testsúly alakulása (minden bejegyzés időrendben; a backend már így adja vissza)
+  private buildWeightChart(weights: WeightEntry[]) {
+    const options = this.baseOptions('kg', 'Nap');
+    options.scales.y.beginAtZero = false; // a változás így látszik, nem 0-tól indul a tengely
+
+    this.charts.push(new Chart(this.weightCanvas.nativeElement, {
+      type: 'line',
+      data: {
+        labels: weights.map(w => this.formatDay(this.parseDay(w.day))),
+        datasets: [{
+          label: 'Testsúly',
+          data: weights.map(w => w.weight),
+          borderColor: COLOR_WEIGHT,
+          backgroundColor: COLOR_WEIGHT,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.25
+        }]
+      },
+      options
+    }));
+  }
+
+  // Első és utolsó bejegyzés összevetése a diagram fölé
+  private summarizeWeights(weights: WeightEntry[]): string {
+    if (weights.length < 2) return '';
+    const first = weights[0].weight;
+    const last = weights[weights.length - 1].weight;
+    const diff = Math.round((last - first) * 10) / 10;
+    const fmt = (n: number) => n.toLocaleString('hu-HU', { maximumFractionDigits: 1 });
+    return `${fmt(first)} kg → ${fmt(last)} kg (${diff > 0 ? '+' : ''}${fmt(diff)} kg)`;
+  }
+
+  // "2026-11-10" → helyi idő szerinti Date (new Date("2026-11-10") UTC-ként értelmezné)
+  private parseDay(day: string): Date {
+    const [y, m, d] = day.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
 
   // Közös beállítások: visszafogott rács, tooltip a teljes oszlopra/pontra, jelmagyarázat nélkül

@@ -30,5 +30,18 @@
         <canvas #caloriesCanvas></canvas>
       </div>
     </div>
+
+    <div class="stats-card stats-card-wide">
+      <h3>Testsúly alakulása</h3>
+      <p class="stats-subtitle">
+        A profil oldalon rögzített napi testsúlyok<span *ngIf="weightSummary">: {{ weightSummary }}</span>
+      </p>
+      <p *ngIf="!loading && !hasWeights" class="stats-empty">
+        Még nincs rögzített testsúlyod. A <a routerLink="/profile">Profil</a> oldalon tudod felvenni.
+      </p>
+      <div class="chart-box" [hidden]="!hasWeights">
+        <canvas #weightCanvas></canvas>
+      </div>
+    </div>
   </div>
 </div>

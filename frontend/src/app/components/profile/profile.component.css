@@ -96,6 +96,79 @@
   text-align: center;
 }
 
+/* Testsúly-előzmények */
+.weight-card {
+  margin-top: 30px;
+}
+
+.weight-title {
+  margin: 0 0 8px;
+  font-size: 1.3rem;
+  color: #166088;
+}
+
+.weight-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.weight-form .profile-field {
+  margin-bottom: 0;
+}
+
+.weight-add {
+  width: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin: 0;
+}
+
+.weight-empty {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0 0;
+}
+
+.weight-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.weight-day {
+  color: #7f8c8d;
+  min-width: 110px;
+}
+
+.weight-value {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.weight-change {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.weight-row .btn-delete-workout {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   .profile-card {
     padding: 20px;
@@ -104,5 +177,11 @@
   .profile-row {
     flex-direction: column;
     gap: 0;
+  }
+
+  .weight-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 }

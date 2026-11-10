@@ -54,4 +54,44 @@
       {{ saving ? 'Mentés...' : 'Mentés' }}
     </button>
   </form>
+
+  <section *ngIf="!loading" class="profile-card weight-card">
+    <h2 class="weight-title"><i class="fas fa-weight-scale"></i> Testsúly-előzmények</h2>
+    <p class="profile-hint">
+      Naponta egy bejegyzés: ha egy napra újra rögzítesz, felülírja az előzőt.
+      A legutolsó bejegyzés lesz a jelenlegi testsúlyod. Diagram: Statisztikák oldal.
+    </p>
+
+    <form [formGroup]="weightForm" (ngSubmit)="addWeight()" class="weight-form">
+      <div class="profile-field">
+        <label for="weight_day">Dátum</label>
+        <input id="weight_day" type="date" formControlName="day" [max]="today">
+      </div>
+      <div class="profile-field">
+        <label for="weight_value">Testsúly (kg)</label>
+        <input id="weight_value" type="number" step="0.1" formControlName="weight" placeholder="pl. 82,5"
+               [class.is-invalid]="weightForm.get('weight')?.invalid && weightForm.get('weight')?.dirty">
+      </div>
+      <button type="submit" class="btn-save weight-add" [disabled]="weightForm.invalid">Rögzítés</button>
+    </form>
+    <span *ngIf="weightForm.get('weight')?.invalid && weightForm.get('weight')?.dirty" class="validation-error">
+      1 és 500 kg között.
+    </span>
+    <div *ngIf="weightError" class="error-banner">{{ weightError }}</div>
+
+    <p *ngIf="weights.length === 0" class="weight-empty">Még nincs rögzített testsúlyod.</p>
+
+    <ul *ngIf="weights.length > 0" class="weight-list">
+      <li *ngFor="let w of weights; let i = index" class="weight-row">
+        <span class="weight-day">{{ w.day | date:'yyyy. MM. dd.' }}</span>
+        <span class="weight-value">{{ w.weight | number:'1.0-1' }} kg</span>
+        <span class="weight-change" *ngIf="weightChange(i) as change">
+          {{ change > 0 ? '+' : '' }}{{ change | number:'1.0-1' }} kg
+        </span>
+        <button type="button" class="btn-delete-workout" (click)="deleteWeight(w)" title="Törlés">
+          <i class="fas fa-trash"></i>
+        </button>
+      </li>
+    </ul>
+  </section>
 </div>

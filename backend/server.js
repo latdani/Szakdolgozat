@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const mealRoutes = require('./routes/meals');
+const weightRoutes = require('./routes/weights');
+const Weight = require('./models/Weight');
 const auth = require('./middleware/auth');
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use('/api/meals', mealRoutes);
+app.use('/api/weights', weightRoutes);
 
 // --- MONGODB CSATLAKOZÁS ---
 // Windowson a Node néha csak 127.0.0.1-et lát DNS szervernek, és nem tudja feloldani a mongodb+srv címet
@@ -21,23 +24,9 @@ if (dns.getServers().every(s => s.startsWith('127.'))) {
     dns.setServers(['1.1.1.1', '8.8.8.8']);
 }
 
-// Az elérési adat a backend/.env fájlban van (minta: .env.example), nem kerül fel a GitHubra
-const mongoURI = process.env.MONGO_URI;
-if (!mongoURI) {
-    console.error('❌ Hiányzik a MONGO_URI! Másold le a backend/.env.example fájlt backend/.env néven, és töltsd ki.');
-    process.exit(1);
-}
-if (!process.env.JWT_SECRET) {
-    console.error('❌ Hiányzik a JWT_SECRET a backend/.env fájlból! (minta: .env.example)');
-    process.exit(1);
-}
-
 // Bejelentkezési token készítése (7 napig érvényes)
 const createToken = (user) => jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-mongoose.connect(mongoURI)
-    .then(() => console.log('✅ Sikeres MongoDB csatlakozás!'))
-    .catch(err => console.error('❌ MongoDB hiba:', err));
 // --- ADATMODELLEK ---
 
 // Felhasználó modell
@@ -185,6 +174,12 @@ app.put('/api/profile', auth, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "A felhasználó nem található" });
         }
+
+        // Ha a profilban megváltozott a testsúly, mai napi bejegyzésként az előzményekbe is bekerül
+        const latest = await Weight.findOne({ userId: req.userId }).sort({ day: -1 });
+        if (user.currentWeight > 0 && (!latest || latest.weight !== user.currentWeight)) {
+            await Weight.saveForDay(req.userId, Weight.today(), user.currentWeight);
+        }
         res.status(200).json(user);
     } catch (err) {
         if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -209,6 +204,9 @@ app.post('/api/workouts', auth, async (req, res) => {
 
         res.status(201).json({ message: "Edzés sikeresen rögzítve!" });
     } catch (err) {
+        if (err.name === 'ValidationError' || err.name === 'CastError') {
+            return res.status(400).json({ message: "Hibás edzésadatok!" });
+        }
         console.error("Workout mentési hiba:", err);
         res.status(500).json({ message: "Nem sikerült elmenteni az edzést." });
     }
@@ -278,6 +276,27 @@ if (fs.existsSync(frontendDir)) {
     app.get(/^(?!\/api).*/, (req, res) => res.sendFile(path.join(frontendDir, 'index.html')));
 }
 
-app.listen(PORT, () => {
-    console.log(`🚀 Szerver fut: http://localhost:${PORT}`);
-});
+// Az app-ot a tesztek is betöltik (backend/tests): ők saját, memóriában futó adatbázishoz csatlakoznak,
+// ezért az adatbázis-kapcsolat és a szerver indítása csak akkor fut, ha a fájlt közvetlenül indítjuk (node server.js)
+if (require.main === module) {
+    // Az elérési adat a backend/.env fájlban van (minta: .env.example), nem kerül fel a GitHubra
+    const mongoURI = process.env.MONGO_URI;
+    if (!mongoURI) {
+        console.error('❌ Hiányzik a MONGO_URI! Másold le a backend/.env.example fájlt backend/.env néven, és töltsd ki.');
+        process.exit(1);
+    }
+    if (!process.env.JWT_SECRET) {
+        console.error('❌ Hiányzik a JWT_SECRET a backend/.env fájlból! (minta: .env.example)');
+        process.exit(1);
+    }
+
+    mongoose.connect(mongoURI)
+        .then(() => console.log('✅ Sikeres MongoDB csatlakozás!'))
+        .catch(err => console.error('❌ MongoDB hiba:', err));
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Szerver fut: http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

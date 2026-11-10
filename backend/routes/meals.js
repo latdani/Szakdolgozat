@@ -13,6 +13,9 @@ router.post('/', async (req, res) => {
         const savedMeal = await newMeal.save();
         res.status(201).json(savedMeal);
     } catch (err) {
+        if (err.name === 'ValidationError' || err.name === 'CastError') {
+            return res.status(400).json({ message: "Hibás vagy hiányzó étkezésadatok!" });
+        }
         console.error("Hiba az étkezés mentésekor:", err);
         res.status(500).json({ message: "Szerver hiba a mentés során" });
     }

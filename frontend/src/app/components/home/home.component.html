@@ -61,13 +61,35 @@
   </div>
 </section>
 
-<section class="stats">
+<!-- Saját összesítő: csak belépve, a felhasználó saját adataiból -->
+<section *ngIf="summary" class="stats">
   <div class="container">
+    <h2 class="summary-title">Saját összesítőd</h2>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-number">10K+</div><div class="stat-label">Aktív felhasználó</div></div>
-      <div class="stat-card"><div class="stat-number">50K+</div><div class="stat-label">Rögzített edzés</div></div>
-      <div class="stat-card"><div class="stat-number">200K+</div><div class="stat-label">Rögzített étkezés</div></div>
-      <div class="stat-card"><div class="stat-number">98%</div><div class="stat-label">Elégedett felhasználó</div></div>
+      <a class="stat-card" routerLink="/workout-log">
+        <div class="stat-number">{{ summary.workoutsThisWeek }}</div>
+        <div class="stat-label">Edzés ezen a héten</div>
+        <div class="stat-sub">Összesen: {{ summary.totalWorkouts }}</div>
+      </a>
+      <a class="stat-card" routerLink="/diet">
+        <div class="stat-number">{{ summary.caloriesToday | number:'1.0-0' }}</div>
+        <div class="stat-label">Mai kalória (kcal)</div>
+        <div class="stat-sub">Cél: {{ summary.dailyCalorieGoal | number:'1.0-0' }} kcal</div>
+      </a>
+      <a class="stat-card" routerLink="/profile">
+        <div class="stat-number">
+          {{ summary.currentWeight ? (summary.currentWeight | number:'1.0-1') : '–' }}
+        </div>
+        <div class="stat-label">Testsúly (kg)</div>
+        <div class="stat-sub" *ngIf="summary.weightChange30 !== null">
+          30 nap: {{ summary.weightChange30 > 0 ? '+' : '' }}{{ summary.weightChange30 | number:'1.0-1' }} kg
+        </div>
+      </a>
+      <a class="stat-card" routerLink="/workout-log">
+        <div class="stat-number">{{ summary.lastWorkout ? (summary.lastWorkout.date | date:'MM. dd.') : '–' }}</div>
+        <div class="stat-label">Utolsó edzés</div>
+        <div class="stat-sub" *ngIf="summary.lastWorkout">{{ summary.lastWorkout.muscleGroup }}</div>
+      </a>
     </div>
   </div>
 </section>
